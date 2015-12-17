@@ -1,0 +1,13 @@
+build/*
+buildTests/*
+dist/*
+tmp/*
+bower_components/*
+node_modules/*
+src/**~
+*~
+vendor/**
+doc/
+.idea
+npm-debug.log
+coverage/*
