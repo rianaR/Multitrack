@@ -13,3 +13,23 @@ Song.prototype.play = function() {
     this.paused=false;
     this.stopped=false;
 };
+
+Song.prototype.stop = function() {
+    this.played=false;
+    this.paused=false;
+    this.stopped=true;
+};
+
+Song.prototype.pause = function() {
+    this.played=false;
+    this.paused=true;
+    this.stopped=false;
+};
+
+Song.prototype.loadDecodedBuffers = function(){
+
+};
+
+Song.prototype.buildGraph = function(){
+
+};
