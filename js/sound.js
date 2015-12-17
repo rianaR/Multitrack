@@ -134,7 +134,7 @@ function loadAllSoundSamples(tracks) {
 }
 function finishedLoading(bufferList) {
     console.log("finished loading");
-    
+
     buffers = bufferList;
     buttonPlay.disabled = false;
 }
