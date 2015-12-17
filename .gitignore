@@ -11,3 +11,4 @@ doc/
 .idea
 npm-debug.log
 coverage/*
+multitrack/*
