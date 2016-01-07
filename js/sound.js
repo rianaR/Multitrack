@@ -6,29 +6,47 @@ var tracks = [];
 var buffers = []; // audio buffers decoded
 var samples = []; // audiograph nodes
 
+//****** Variables de controle du volume ************
+
 // Master volume
 var masterVolumeNode;
+// Volumes de chaque piste
 var trackVolumeNodes = [];
 
+//***************************************
+
+//****** Elements graphiques ************
+
+// Boutons graphiques play pause stop
 var buttonPlay, buttonStop, buttonPause;
+// Slider volume général
 var masterVolumeSlider;
 // List of tracks and mute buttons
 var divTrack;
 
+// Dessin
 var canvas, ctx;
 var frontCanvas, frontCtx;
 
 // Sample size in pixels
 var SAMPLE_HEIGHT = 100;
 
-// Useful for memorizing when we paused the song
+//***************************************
+
+//****** Contrôle de l'avancée dans la chanson ************
+
+//Temps absolus, qui serviront à calculer de combien de ms la chanson a avancé
 var lastTime = 0;
 var currentTime;
-var delta;
 
+// currentTime - lastTime, pour calculer elapsedTimeSinceStart
+var delta;
+//Avancée courante dans la chanson
 var elapsedTimeSinceStart = 0;
 
 var paused = true;
+
+//***************************************
 
 // requestAnim shim layer by Paul Irish, like that canvas animation works
 // in all browsers
@@ -121,6 +139,8 @@ function resetAllBeforeLoadingANewSong() {
     });*/
 }
 
+// Partie chargement des pistes, des graphes (?)
+
 var bufferLoader;
 function loadAllSoundSamples(tracks) {
 
@@ -134,7 +154,7 @@ function loadAllSoundSamples(tracks) {
 }
 function finishedLoading(bufferList) {
     console.log("finished loading");
-    
+
     buffers = bufferList;
     buttonPlay.disabled = false;
 }
@@ -162,6 +182,7 @@ function buildGraph(bufferList) {
 }
 
 // ######### SONGS
+// Charger la liste des chansons de la "base de données"
 function loadSongList() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', "track", true);
@@ -210,6 +231,7 @@ function getTrackName(elem) {
     return elem.slice(0, n + 1);
 }
 
+// Charger la liste des pistes d'une chanson
 function loadTrackList(songName) {
 resetAllBeforeLoadingANewSong();
 
@@ -250,6 +272,106 @@ resetAllBeforeLoadingANewSong();
     };
     xhr.send();
 }
+
+function loadSong(song) {
+    loadTrackList(song);
+}
+
+//*******************************************
+
+//Partie gestion des pistes (pause, play, stop, mute/unmute, position dans les pistes)
+
+function playAllTracks(startTime) {
+    buildGraph(buffers);
+
+    playFrom(startTime);
+
+
+}
+
+// Same as previous one except that we not rebuild the graph. Useful for jumping from one
+// part of the song to another one, i.e. when we click the mouse on the sample graph
+function playFrom(startTime) {
+    // Read current master volume slider position and set the volume
+    setMasterVolume()
+
+
+    samples.forEach(function(s) {
+// First parameter is the delay before playing the sample
+// second one is the offset in the song, in seconds, can be 2.3456
+// very high precision !
+        s.start(0, startTime);
+    })
+    buttonPlay.disabled = true;
+    buttonStop.disabled = false;
+    buttonPause.disabled = false;
+
+    // Note : we memorise the current time, context.currentTime always
+    // goes forward, it's a high precision timer
+    console.log("start all tracks startTime =" + startTime);
+    lastTime = context.currentTime;
+    paused = false;
+}
+
+function stopAllTracks() {
+    samples.forEach(function(s) {
+// destroy the nodes
+        s.stop(0);
+    });
+    buttonStop.disabled = true;
+    buttonPause.disabled = true;
+    buttonPlay.disabled = false;
+    elapsedTimeSinceStart = 0;
+    paused = true;
+}
+
+function pauseAllTracks() {
+    if (!paused) {
+        // Then stop playing
+        samples.forEach(function(s) {
+// destroy the nodes
+            s.stop(0);
+        });
+        paused = true;
+        buttonPause.innerHTML = "Resume";
+    } else {
+        paused = false;
+// we were in pause, let's start again from where we paused
+        playAllTracks(elapsedTimeSinceStart);
+        buttonPause.innerHTML = "Pause";
+    }
+}
+
+function setMasterVolume() {
+
+    var fraction = parseInt(masterVolumeSlider.value) / parseInt(masterVolumeSlider.max);
+    // Let's use an x*x curve (x-squared) since simple linear (x) does not
+    // sound as good.
+    if( masterVolumeNode != undefined)
+        masterVolumeNode.gain.value = fraction * fraction;
+}
+function changeMasterVolume() {
+    setMasterVolume();
+}
+
+
+function muteUnmuteTrack(trackNumber) {
+// AThe mute / unmute button
+    var b = document.querySelector("#mute" + trackNumber);
+    if (trackVolumeNodes[trackNumber].gain.value == 1) {
+        trackVolumeNodes[trackNumber].gain.value = 0;
+        b.innerHTML = "Unmute";
+    } else {
+        trackVolumeNodes[trackNumber].gain.value = 1;
+        b.innerHTML = "Mute";
+    }
+
+
+}
+
+//*********************************************
+
+// Partie représentation graphique de la piste
 
 function getMousePos(canvas, evt) {
     // get canvas position
@@ -342,96 +464,4 @@ function resizeSampleCanvas(numTracks) {
 }
 function clearAllSampleDrawings() {
     //ctx.clearRect(0,0, canvas.width, canvas.height);
-}
-
-function loadSong(song) {
-    loadTrackList(song);
-}
-
-function playAllTracks(startTime) {
-    buildGraph(buffers);
-
-    playFrom(startTime);
-
-  
-}
-
-// Same as previous one except that we not rebuild the graph. Useful for jumping from one
-// part of the song to another one, i.e. when we click the mouse on the sample graph
-function playFrom(startTime) {
-  // Read current master volume slider position and set the volume
-  setMasterVolume()
-
-
-  samples.forEach(function(s) {
-// First parameter is the delay before playing the sample
-// second one is the offset in the song, in seconds, can be 2.3456
-// very high precision !
-        s.start(0, startTime);
-    })
-    buttonPlay.disabled = true;
-    buttonStop.disabled = false;
-    buttonPause.disabled = false;
-
-    // Note : we memorise the current time, context.currentTime always
-    // goes forward, it's a high precision timer
-    console.log("start all tracks startTime =" + startTime);
-    lastTime = context.currentTime;
-    paused = false;
-}
-
-function stopAllTracks() {
-    samples.forEach(function(s) {
-// destroy the nodes
-        s.stop(0);
-    });
-    buttonStop.disabled = true;
-    buttonPause.disabled = true;
-    buttonPlay.disabled = false;
-    elapsedTimeSinceStart = 0;
-    paused = true;
-}
-
-function pauseAllTracks() {
-    if (!paused) {
-        // Then stop playing
-        samples.forEach(function(s) {
-// destroy the nodes
-            s.stop(0);
-        });
-        paused = true;
-        buttonPause.innerHTML = "Resume";
-    } else {
-        paused = false;
-// we were in pause, let's start again from where we paused
-        playAllTracks(elapsedTimeSinceStart);
-        buttonPause.innerHTML = "Pause";
-    }
-}
-
-function setMasterVolume() {
-
-   var fraction = parseInt(masterVolumeSlider.value) / parseInt(masterVolumeSlider.max);
-    // Let's use an x*x curve (x-squared) since simple linear (x) does not
-    // sound as good.
-    if( masterVolumeNode != undefined)
-        masterVolumeNode.gain.value = fraction * fraction;
-}
-function changeMasterVolume() {
-   setMasterVolume();
-}
-
-
-function muteUnmuteTrack(trackNumber) {
-// AThe mute / unmute button
-    var b = document.querySelector("#mute" + trackNumber);
-    if (trackVolumeNodes[trackNumber].gain.value == 1) {
-        trackVolumeNodes[trackNumber].gain.value = 0;
-        b.innerHTML = "Unmute";
-    } else {
-        trackVolumeNodes[trackNumber].gain.value = 1;
-        b.innerHTML = "Mute";
-    }
-
-
 }
