@@ -1,4 +1,3 @@
-var fs = require("fs");
 // We need to use the express framework: have a real web server that knows how to send mime types etc.
 var express=require('express');
 
@@ -15,8 +14,7 @@ app.configure(function () {
 });  
 
 // Config
-var PORT = 8081,
-	TRACKS_PATH = './multitrack/';
+var PORT = 8081;
 
 // launch the http server on given port
 server.listen(PORT);

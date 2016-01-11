@@ -1,8 +1,12 @@
 /**
  * Created by marina on 07/01/16.
  */
+var fs = require("fs");
+
 var express=require('express');
 var router = express.Router();
+
+var TRACKS_PATH = './multitrack/';
 
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
