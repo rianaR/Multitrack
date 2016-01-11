@@ -19,3 +19,4 @@ server.listen(PORT);
 
 app.use('/', routes);
 
+console.log("Server launch on the port "+PORT);
