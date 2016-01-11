@@ -159,27 +159,18 @@ function finishedLoading(bufferList) {
     buttonPlay.disabled = false;
 }
 
-function buildGraph(bufferList) {
-    var sources = [];
-    // Create a single gain node for master volume
-    masterVolumeNode = context.createGain();
-    console.log("in build graph, bufferList.size = " + bufferList.length);
-    bufferList.forEach(function(sample, i) {
-// each sound sample is the  source of a graph
-        sources[i] = context.createBufferSource();
-        sources[i].buffer = sample;
-        // connect each sound sample to a vomume node
-        trackVolumeNodes[i] = context.createGain();
-        // Connect the sound sample to its volume node
-        sources[i].connect(trackVolumeNodes[i]);
-        // Connects all track volume nodes a single master volume node
-        trackVolumeNodes[i].connect(masterVolumeNode);
-        // Connect the master volume to the speakers
-        masterVolumeNode.connect(context.destination);
-        // On active les boutons start et stop
-        samples = sources;
-    })
-}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ######### SONGS
 // Charger la liste des chansons de la "base de données"
@@ -231,7 +222,7 @@ function getTrackName(elem) {
     return elem.slice(0, n + 1);
 }
 
-// Charger la liste des pistes d'une chanson
+// Charger et afficher la liste des pistes d'une chanson
 function loadTrackList(songName) {
 resetAllBeforeLoadingANewSong();
 
@@ -280,6 +271,28 @@ function loadSong(song) {
 //*******************************************
 
 //Partie gestion des pistes (pause, play, stop, mute/unmute, position dans les pistes)
+
+function buildGraph(bufferList) {
+    var sources = [];
+    // Create a single gain node for master volume
+    masterVolumeNode = context.createGain();
+    console.log("in build graph, bufferList.size = " + bufferList.length);
+    bufferList.forEach(function(sample, i) {
+// each sound sample is the  source of a graph
+        sources[i] = context.createBufferSource();
+        sources[i].buffer = sample;
+        // connect each sound sample to a vomume node
+        trackVolumeNodes[i] = context.createGain();
+        // Connect the sound sample to its volume node
+        sources[i].connect(trackVolumeNodes[i]);
+        // Connects all track volume nodes a single master volume node
+        trackVolumeNodes[i].connect(masterVolumeNode);
+        // On active les boutons start et stop
+        samples = sources;
+    });
+    // Connect the master volume to the speakers
+    masterVolumeNode.connect(context.destination);
+}
 
 function playAllTracks(startTime) {
     buildGraph(buffers);
@@ -371,7 +384,7 @@ function muteUnmuteTrack(trackNumber) {
 
 //*********************************************
 
-// Partie représentation graphique de la piste
+// Partie représentation graphique de la piste et déplacement dans la piste
 
 function getMousePos(canvas, evt) {
     // get canvas position
