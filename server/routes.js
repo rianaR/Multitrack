@@ -43,7 +43,7 @@ router.get('/track/:id', function (req, res) {
 
 // routing
 router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, res) {
-    res.sendfile(__dirname + '/' + TRACKS_PATH + req.params[0] + '/' + req.params[1]);
+    res.sendfile(TRACKS_PATH + req.params[0] + '/' + req.params[1]);
 });
 
 function getTracks(callback) {
