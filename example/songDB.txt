@@ -2,7 +2,7 @@ json example for create a song with POST /song:
 
 
 {
-	"song_id":1,
+	"_id":1,
 	"artist":"Queen",
 	"song":"We Are The Champions",
 	"released":"1977",

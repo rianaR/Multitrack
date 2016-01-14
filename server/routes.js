@@ -52,13 +52,12 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 // routing
 router.get('/song',function(req,res) {
-    res.write("get /song");
-    res.write(song.getSong(res));
-    res.end();
+    song.getSong(res,function(){
+	res.end();
+    });
 });
 
 router.post('/song',function(req,res) {
-    res.write("post /song");
     song.postSong(req.body);
     res.end();
 });

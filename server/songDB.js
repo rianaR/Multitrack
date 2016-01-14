@@ -16,27 +16,30 @@ var insertDocument = function(db,doc,collection,callback) {
 };
 
 
+var findDocuments = function(db, res, collection, callback) {
+   var cursor = db.collection(collection).find();
+   cursor.each(function(err, doc) {
+      assert.equal(err, null);
+      if (doc != null) {
+	  res.write(JSON.stringify(doc));
+      } else {
+         callback();
+      }
+   });
+};
+
 module.exports = {
     
-    getSong: function (response) {
-	
+    getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
-	    var cursor = db.collection('songDB').find( );
-	    result = [];
-	    cursor.each(function(err, doc) {
-		assert.equal(err, null);
-		if (doc != null) {
-		    result.push(doc);
-		} else {
-		    callback();
-		}
+	    findDocuments(db, res,songCollection, function() {
+		db.close();
+		callback();
 	    });
-	    db.close();
-	    console.log(result);
-	    response.write(JSON.stringify(result))
 	});
+
     },
     
     postSong: function(song,res) {
