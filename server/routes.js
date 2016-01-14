@@ -8,6 +8,9 @@ var router = express.Router();
 
 var TRACKS_PATH = 'multitrack/';
 
+var song = require('./songDB');
+
+
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
 });
@@ -44,6 +47,20 @@ router.get('/track/:id', function (req, res) {
 // routing
 router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, res) {
     res.sendfile(TRACKS_PATH + req.params[0] + '/' + req.params[1]);
+});
+
+
+// routing
+router.get('/song',function(req,res) {
+    res.write("get /song");
+    res.write(song.getSong(res));
+    res.end();
+});
+
+router.post('/song',function(req,res) {
+    res.write("post /song");
+    song.postSong(req.body);
+    res.end();
 });
 
 function getTracks(callback) {
