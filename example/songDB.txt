@@ -1,0 +1,16 @@
+json example for create a song with POST /song: 
+
+{
+	"artist":"Queen",
+	"song":"We Are The Champions",
+	"released":"1977",
+	"path":"multlitrack/queen_champions/"
+	"track": [
+		 "basse.mp3",
+		 "batterie.mp3",
+		 "guitare2.mp3",
+		 "guitare.mp3",
+		 "piano.mp3",
+		 "voix.mp3"
+		 ]
+}
