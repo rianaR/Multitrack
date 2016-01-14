@@ -1,19 +1,6 @@
 var context;
 var source = null;
-var audioBuffer = null;
-// Les echantillons prêts à être joués, de toutes les pistes
-var tracks = [];
-var buffers = []; // audio buffers decoded
-var samples = []; // audiograph nodes
-
-//****** Variables de controle du volume ************
-
-// Master volume
-var masterVolumeNode;
-// Volumes de chaque piste
-var trackVolumeNodes = [];
-
-//***************************************
+var currentSong;
 
 //****** Elements graphiques ************
 
@@ -30,23 +17,6 @@ var frontCanvas, frontCtx;
 
 // Sample size in pixels
 var SAMPLE_HEIGHT = 100;
-
-//***************************************
-
-//****** Contrôle de l'avancée dans la chanson ************
-
-//Temps absolus, qui serviront à calculer de combien de ms la chanson a avancé
-var lastTime = 0;
-var currentTime;
-
-// currentTime - lastTime, pour calculer elapsedTimeSinceStart
-var delta;
-//Avancée courante dans la chanson
-var elapsedTimeSinceStart = 0;
-
-var paused = true;
-
-//***************************************
 
 // requestAnim shim layer by Paul Irish, like that canvas animation works
 // in all browsers
@@ -139,39 +109,6 @@ function resetAllBeforeLoadingANewSong() {
     });*/
 }
 
-// Partie chargement des pistes, des graphes (?)
-
-var bufferLoader;
-function loadAllSoundSamples(tracks) {
-
-
-    bufferLoader = new BufferLoader(
-            context,
-            tracks,
-            finishedLoading
-            );
-    bufferLoader.load();
-}
-function finishedLoading(bufferList) {
-    console.log("finished loading");
-
-    buffers = bufferList;
-    buttonPlay.disabled = false;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ######### SONGS
 // Charger la liste des chansons de la "base de données"
 function loadSongList() {
@@ -183,6 +120,10 @@ function loadSongList() {
     s.appendTo("#songs");
     s.change(function(e) {
         console.log("You chose : " + $(this).val());
+        currentSong = new Song(
+            {name: $(this).val()},
+            context
+        );
         loadTrackList($(this).val());
     });
 
@@ -252,19 +193,24 @@ resetAllBeforeLoadingANewSong();
 
             // Audio
             console.log("on a un fichier audio");
-            // load audio dans un tableau...
+
             var url = "track/" + songName + "/sound/" + instrument.sound;
-            tracks.push(url);
+            currentSong.addTrack(instrument.name, url, trackNumber);
             console.log("Ajout piste audio " + instrument.name);
             
 
         });
-        loadAllSoundSamples(tracks);
+        currentSong.loadTracks();
+        buttonPlay.disabled = false;
     };
     xhr.send();
 }
 
 function loadSong(song) {
+    currentSong = new Song(
+        {name: song},
+        context
+    );
     loadTrackList(song);
 }
 
@@ -272,85 +218,29 @@ function loadSong(song) {
 
 //Partie gestion des pistes (pause, play, stop, mute/unmute, position dans les pistes)
 
-function buildGraph(bufferList) {
-    var sources = [];
-    // Create a single gain node for master volume
-    masterVolumeNode = context.createGain();
-    console.log("in build graph, bufferList.size = " + bufferList.length);
-    bufferList.forEach(function(sample, i) {
-// each sound sample is the  source of a graph
-        sources[i] = context.createBufferSource();
-        sources[i].buffer = sample;
-        // connect each sound sample to a vomume node
-        trackVolumeNodes[i] = context.createGain();
-        // Connect the sound sample to its volume node
-        sources[i].connect(trackVolumeNodes[i]);
-        // Connects all track volume nodes a single master volume node
-        trackVolumeNodes[i].connect(masterVolumeNode);
-        // On active les boutons start et stop
-        samples = sources;
-    });
-    // Connect the master volume to the speakers
-    masterVolumeNode.connect(context.destination);
-}
-
 function playAllTracks(startTime) {
-    buildGraph(buffers);
+    currentSong.play();
 
-    playFrom(startTime);
-
-
-}
-
-// Same as previous one except that we not rebuild the graph. Useful for jumping from one
-// part of the song to another one, i.e. when we click the mouse on the sample graph
-function playFrom(startTime) {
-    // Read current master volume slider position and set the volume
-    setMasterVolume()
-
-
-    samples.forEach(function(s) {
-// First parameter is the delay before playing the sample
-// second one is the offset in the song, in seconds, can be 2.3456
-// very high precision !
-        s.start(0, startTime);
-    })
     buttonPlay.disabled = true;
     buttonStop.disabled = false;
     buttonPause.disabled = false;
 
-    // Note : we memorise the current time, context.currentTime always
-    // goes forward, it's a high precision timer
     console.log("start all tracks startTime =" + startTime);
-    lastTime = context.currentTime;
-    paused = false;
 }
 
 function stopAllTracks() {
-    samples.forEach(function(s) {
-// destroy the nodes
-        s.stop(0);
-    });
+    currentSong.stop();
     buttonStop.disabled = true;
     buttonPause.disabled = true;
     buttonPlay.disabled = false;
-    elapsedTimeSinceStart = 0;
-    paused = true;
 }
 
 function pauseAllTracks() {
-    if (!paused) {
-        // Then stop playing
-        samples.forEach(function(s) {
-// destroy the nodes
-            s.stop(0);
-        });
-        paused = true;
+    if (!currentSong.paused) {
+        currentSong.pause();
         buttonPause.innerHTML = "Resume";
     } else {
-        paused = false;
-// we were in pause, let's start again from where we paused
-        playAllTracks(elapsedTimeSinceStart);
+        currentSong.play();
         buttonPause.innerHTML = "Pause";
     }
 }
@@ -360,8 +250,9 @@ function setMasterVolume() {
     var fraction = parseInt(masterVolumeSlider.value) / parseInt(masterVolumeSlider.max);
     // Let's use an x*x curve (x-squared) since simple linear (x) does not
     // sound as good.
-    if( masterVolumeNode != undefined)
-        masterVolumeNode.gain.value = fraction * fraction;
+    if (currentSong != undefined) {
+        currentSong.setMasterVolume(fraction*fraction);
+    }
 }
 function changeMasterVolume() {
     setMasterVolume();
@@ -369,17 +260,11 @@ function changeMasterVolume() {
 
 
 function muteUnmuteTrack(trackNumber) {
-// AThe mute / unmute button
+    //mute / unmute button
     var b = document.querySelector("#mute" + trackNumber);
-    if (trackVolumeNodes[trackNumber].gain.value == 1) {
-        trackVolumeNodes[trackNumber].gain.value = 0;
-        b.innerHTML = "Unmute";
-    } else {
-        trackVolumeNodes[trackNumber].gain.value = 1;
-        b.innerHTML = "Mute";
-    }
 
-
+    currentSong.muteUnmuteTrack(trackNumber);
+    b.innerHTML = (b.innerHTML == "Unmute" ? "Mute" : "Unmute");
 }
 
 //*********************************************
@@ -411,33 +296,25 @@ function getMousePos(canvas, evt) {
     // width - totalTime
     // x - ?
        stopAllTracks();
-    var totalTime = buffers[0].duration;
+    var totalTime = currentSong.getDuration();
     var startTime = (mousePos.x * totalTime) / frontCanvas.width;
-elapsedTimeSinceStart = startTime;
+    currentSong.elapsedTimeSinceStart = startTime;
     playAllTracks(startTime);
  }
 
 function animateTime() {
-    if (!paused) {
-        // Draw the time on the front canvas
-        currentTime = context.currentTime;
-        var delta = currentTime - lastTime;
-
-
-        var totalTime;
-
+    if (currentSong && !currentSong.paused) {
         frontCtx.clearRect(0, 0, canvas.width, canvas.height);
         frontCtx.fillStyle = 'white';
         frontCtx.font = '14pt Arial';
-        frontCtx.fillText(elapsedTimeSinceStart.toPrecision(4), 100, 20);
-        //console.log("dans animate");
+        frontCtx.fillText(currentSong.elapsedTimeSinceStart.toPrecision(4), 100, 20);
 
         // at least one track has been loaded
-        if (buffers[0] != undefined) {
+        if (currentSong.tracks[0] != undefined) {
+            var totalTime = currentSong.getDuration();
+            var x = currentSong.elapsedTimeSinceStart * canvas.width / totalTime;
 
-            var totalTime = buffers[0].duration;
-            var x = elapsedTimeSinceStart * canvas.width / totalTime;
-
+            // Draw the time on the front canvas
             frontCtx.strokeStyle = "white";
             frontCtx.lineWidth = 3;
             frontCtx.beginPath();
@@ -445,8 +322,7 @@ function animateTime() {
             frontCtx.lineTo(x, canvas.height);
             frontCtx.stroke();
 
-            elapsedTimeSinceStart += delta;
-            lastTime = currentTime;
+            currentSong.updateTime();
         }
     }
     requestAnimFrame(animateTime);
