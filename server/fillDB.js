@@ -9,7 +9,7 @@ MongoClient.connect('mongodb://127.0.0.1:27017/test', function(err, db) {
     db.collection('song').deleteMany({}, function(err, results) {
         var data = fs.readFileSync("data.json");
         var JSONData = JSON.parse(data);
-        db.collection('songs').insertMany(JSONData, function(err, result) {
+        db.collection('song').insertMany(JSONData, function(err, result) {
             assert.equal(null, err);
             console.log("Number of inserted documents : "+result.insertedCount);
             db.close();
