@@ -8,10 +8,10 @@ var path = require('path');
 var songCollection = "song";
 
 var insertDocument = function(db,doc,collection,callback) {
-    /*if (doc._id <= 0) {
+    console.log(doc);
+    if (doc._id <= 0) {
         callback("Id must be greater than 0", null);
-        return;
-    }*/
+    }
    db.collection(collection).insertOne(doc, function(err, result) {
     assert.equal(err, null);
     console.log("Inserted a document into the "+collection+ " collection.");
@@ -26,9 +26,9 @@ var findDocuments = function(db, res, collection, callback) {
    cursor.each(function(err, doc) {
       assert.equal(err, null);
       if (doc != null) {
-	  result.push(doc);
+          result.push(doc);
       } else {
-	  res.write(JSON.stringify(result));
+	    res.write(JSON.stringify(result));
           callback();
       }
    });
@@ -67,10 +67,12 @@ module.exports = {
     
     getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
+        if (err) {
+            console.error(err);
+        }
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
 	    findDocuments(db, res,songCollection, function() {
-            res.setHeader("Content-Type", "application/json");
             db.close();
             callback();
 	    });
