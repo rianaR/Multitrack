@@ -62,6 +62,19 @@ router.post('/song',function(req,res) {
     res.end();
 });
 
+
+router.delete('/songs', function(req,res) {
+    song.removeAllSongs(req.params.id);
+    res.end();
+});
+
+router.delete('/song/:id', function(req,res) {
+    song.removeSong(req.params.id);
+    res.end();
+});
+
+
+
 function getTracks(callback) {
     getFiles(TRACKS_PATH, callback);
 }
