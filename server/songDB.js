@@ -8,6 +8,10 @@ var path = require('path');
 var songCollection = "song";
 
 var insertDocument = function(db,doc,collection,callback) {
+    /*if (doc._id <= 0) {
+        callback("Id must be greater than 0", null);
+        return;
+    }*/
    db.collection(collection).insertOne(doc, function(err, result) {
     assert.equal(err, null);
     console.log("Inserted a document into the "+collection+ " collection.");
@@ -64,8 +68,9 @@ module.exports = {
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
 	    findDocuments(db, res,songCollection, function() {
-		db.close();
-		callback();
+            res.header("Content-Type", "application/json");
+            db.close();
+            callback();
 	    });
 	});
 
