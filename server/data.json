@@ -1,0 +1,199 @@
+[
+  {
+    "_id": 1,
+    "artist": "Queen",
+    "song": "We Are The Champions",
+    "released": "1977",
+    "path": "multitrack/queen_champions/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "basse.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "batterie.mp3"
+      },
+      {
+        "name": "guitare",
+        "path": "guitare.mp3"
+      },
+      {
+        "name": "guitare2",
+        "path": "guitare2.mp3"
+      },
+      {
+        "name": "piano",
+        "path": "piano.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "voix.mp3"
+      }
+    ]
+  },
+  {
+    "_id": 2,
+    "artist": "James Brown",
+    "song": "Get Up",
+    "released": "1970",
+    "path": "multitrack/jamesbrown_get/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "basse.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "batterie.mp3"
+      },
+      {
+        "name": "extra",
+        "path": "extra.mp3"
+      },
+      {
+        "name": "guitare",
+        "path": "guitare.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "voix.mp3"
+      }
+    ]
+  },
+  {
+    "_id": 3,
+    "artist": "Deep Purple",
+    "song": "Smoke On The Water",
+    "released": "1972",
+    "path": "multitrack/deep_smoke/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "basse.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "batterie.mp3"
+      },
+      {
+        "name": "guitare",
+        "path": "guitare.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "voix.mp3"
+      }
+    ]
+  },
+  {
+    "_id": 4,
+    "artist": "Bob Marley",
+    "song": "Is This Love",
+    "released": "1978",
+    "path": "multitrack/bob_love/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "basse.mp3"
+      },
+      {
+        "name": "choeurs1",
+        "path": "choeurs1.mp3"
+      },
+      {
+        "name": "choeurs2",
+        "path": "choeurs2.mp3"
+      },
+      {
+        "name": "extra",
+        "path": "extra.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "batterie.mp3"
+      },
+      {
+        "name": "guitare1",
+        "path": "guitare1.mp3"
+      },
+      {
+        "name": "guitare2",
+        "path": "guitare2.mp3"
+      },
+      {
+        "name": "guitare3",
+        "path": "guitare3.mp3"
+      },
+      {
+        "name": "oooh",
+        "path": "oooh.mp3"
+      },
+      {
+        "name": "orgue",
+        "path": "orgue.mp3"
+      },
+      {
+        "name": "piano",
+        "path": "piano.mp3"
+      },
+      {
+        "name": "rythme",
+        "path": "rythme.mp3"
+      },
+      {
+        "name": "saxo",
+        "path": "saxo.mp3"
+      },
+      {
+        "name": "trombone",
+        "path": "trombone.mp3"
+      },
+      {
+        "name": "trompette",
+        "path": "trompette.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "voix.mp3"
+      }
+    ]
+  },
+  {
+    "_id": 5,
+    "artist": "Amy Winehouse",
+    "song": "Rehab",
+    "released": "2006",
+    "path": "multitrack/amy_rehab/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "basse.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "batterie.mp3"
+      },
+      {
+        "name": "cuivre",
+        "path": "cuivre.mp3"
+      },
+      {
+        "name": "guitare",
+        "path": "guitare.mp3"
+      },
+      {
+        "name": "orgue",
+        "path": "orgue.mp3"
+      },
+      {
+        "name": "piano",
+        "path": "piano.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "voix.mp3"
+      }
+    ]
+  }
+]
