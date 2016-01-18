@@ -55,6 +55,10 @@ var removeAllSongs = function(db, collection, callback) {
 
 module.exports = {    
 
+    getSongDB: function(){
+	return songCollection;
+    },
+    
     getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
