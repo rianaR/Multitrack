@@ -6,7 +6,7 @@ var assert = require("assert");
 MongoClient.connect('mongodb://127.0.0.1:27017/test', function(err, db) {
     if(err) throw err;
 
-    db.collection('songs').deleteMany({}, function(err, results) {
+    db.collection('song').deleteMany({}, function(err, results) {
         var data = fs.readFileSync("data.json");
         var JSONData = JSON.parse(data);
         db.collection('songs').insertMany(JSONData, function(err, result) {
