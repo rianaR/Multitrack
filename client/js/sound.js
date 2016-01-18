@@ -139,7 +139,7 @@ function resetAllBeforeLoadingANewSong() {
     });*/
 }
 
-// Partie chargement des pistes, des graphes (?)
+// Partie views des pistes, des graphes (?)
 
 var bufferLoader;
 function loadAllSoundSamples(tracks) {
