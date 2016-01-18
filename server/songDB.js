@@ -68,7 +68,7 @@ module.exports = {
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
 	    findDocuments(db, res,songCollection, function() {
-            res.header("Content-Type", "application/json");
+            res.setHeader("Content-Type", "application/json");
             db.close();
             callback();
 	    });
