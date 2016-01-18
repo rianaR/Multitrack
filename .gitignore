@@ -12,3 +12,4 @@ doc/
 npm-debug.log
 coverage/*
 multitrack/*
+server/data.json
