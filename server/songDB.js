@@ -28,8 +28,33 @@ var findDocuments = function(db, res, collection, callback) {
    });
 };
 
-module.exports = {
-    
+var removeSong = function(db, id, collection, callback) {
+    var filter= {};
+    filter._id = Number(id);
+    db.collection(collection).deleteMany(
+      filter,
+      function(err, results) {
+	  assert.equal(err, null);
+	  //console.log(results);
+	  console.log("Song id="+id+" deleted.");
+          callback();
+      }
+   );
+};
+
+var removeAllSongs = function(db, collection, callback) {
+   db.collection(collection).deleteMany({},
+      function(err, results) {
+	  assert.equal(err, null);
+	  console.log("All songs deleted.");
+          callback();
+      }
+   );
+};
+
+
+module.exports = {    
+
     getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
@@ -42,7 +67,7 @@ module.exports = {
 
     },
     
-    postSong: function(song,res) {
+    postSong: function(song) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
@@ -50,6 +75,26 @@ module.exports = {
 		db.close();
 	    });
 	});
+    },
 
+    removeSong: function(songId) {
+	MongoClient.connect(url, function(err, db) {
+	    assert.equal(null, err);
+	    console.log("Connected correctly to server.");
+	    removeSong(db,songId,songCollection, function() {
+		db.close();
+	    });
+	});
+    },
+
+    removeAllSongs: function() {
+	MongoClient.connect(url, function(err, db) {
+	    assert.equal(null, err);
+	    console.log("Connected correctly to server.");
+	    removeAllSongs(db,songCollection, function() {
+		db.close();
+	    });
+	});
     }
+    
 };
