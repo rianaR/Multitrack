@@ -8,6 +8,10 @@ var path = require('path');
 var songCollection = "song";
 
 var insertDocument = function(db,doc,collection,callback) {
+    /*if (doc._id <= 0) {
+        callback("Id must be greater than 0", null);
+        return;
+    }*/
    db.collection(collection).insertOne(doc, function(err, result) {
     assert.equal(err, null);
     console.log("Inserted a document into the "+collection+ " collection.");
@@ -55,13 +59,18 @@ var removeAllSongs = function(db, collection, callback) {
 
 module.exports = {    
 
+    getSongDB: function(){
+	return songCollection;
+    },
+    
     getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
 	    console.log("Connected correctly to server.");
 	    findDocuments(db, res,songCollection, function() {
-		db.close();
-		callback();
+            res.setHeader("Content-Type", "application/json");
+            db.close();
+            callback();
 	    });
 	});
 
