@@ -22,12 +22,14 @@ var insertDocument = function(db,doc,collection,callback) {
 
 var findDocuments = function(db, res, collection, callback) {
    var cursor = db.collection(collection).find();
+    var result = [];
    cursor.each(function(err, doc) {
       assert.equal(err, null);
       if (doc != null) {
-	  res.write(JSON.stringify(doc));
+	  result.push(doc);
       } else {
-         callback();
+	  res.write(JSON.stringify(result));
+          callback();
       }
    });
 };
