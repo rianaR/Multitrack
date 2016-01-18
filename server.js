@@ -19,6 +19,14 @@ var PORT = 8081;
 // launch the http server on given port
 server.listen(PORT);
 
+app.use(function(req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
+
 app.use('/', routes);
+
 
 console.log("Server launch on the port "+PORT);
