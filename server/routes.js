@@ -9,7 +9,7 @@ var router = express.Router();
 var TRACKS_PATH = 'multitrack/';
 
 var song = require('./songDB');
-
+var mix = require('./mixDB');
 
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
@@ -50,7 +50,7 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 });
 
 
-// routing
+// routing song
 router.get('/song',function(req,res) {
     song.getSong(res,function(){
 	res.end();
@@ -63,7 +63,7 @@ router.post('/song',function(req,res) {
 });
 
 
-router.delete('/songs', function(req,res) {
+router.delete('/allSongs', function(req,res) {
     song.removeAllSongs(req.params.id);
     res.end();
 });
@@ -73,6 +73,29 @@ router.delete('/song/:id', function(req,res) {
     res.end();
 });
 
+
+// routing mix
+router.get('/mix',function(req,res) {
+    mix.getMix(res,function(){
+	res.end();
+    });
+});
+
+router.post('/mix',function(req,res) {
+    mix.postMix(req.body);
+    res.end();
+});
+
+
+router.delete('/allMix', function(req,res) {
+    mix.removeAllMix(req.params.id);
+    res.end();
+});
+
+router.delete('/mix/:id', function(req,res) {
+    mix.removeMix(req.params.id);
+    res.end();
+});
 
 
 function getTracks(callback) {
