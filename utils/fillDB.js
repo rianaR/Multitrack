@@ -1,7 +1,7 @@
 var MongoClient = require('mongodb').MongoClient;
 var fs = require("fs");
 var assert = require("assert");
-var song = require('./songDB');
+var song = require('../server/songDB');
 
 // putting the data into the 'test' database:
 MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
