@@ -1,7 +1,7 @@
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/test';
+var url = 'mongodb://localhost:27017/prod';
 var fs = require('fs');
 var path = require('path');
 
@@ -11,6 +11,15 @@ var songCollection = "song";
 
 
 module.exports = {    
+
+    /**
+     * Set a new database
+     *
+     * name is the name of the new database
+     **/
+    setDB: function(name){
+	url = 'mongodb://localhost:27017/'+name;
+    }
 
     //give the song collection name
     getSongDB: function(){
