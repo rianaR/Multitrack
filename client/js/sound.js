@@ -91,6 +91,44 @@ function initAudioContext() {
 }
 // SOUNDS AUDIO ETC.
 
+
+function resetAllBeforeLoadingANewSong() {
+    // Marche pas, c'est pour tester...
+    console.log('resetAllBeforeLoadingANewSong');
+    // reset array of tracks. If we don't do this we just add new samples to existing
+    // ones... playing two songs at the same time etc.
+    tracks = [];
+
+    stopAllTracks();
+    buttonPlay.disabled = true;
+    divTrack.innerHTML="";
+    /*
+    samples.forEach(function(s) {
+        s.stop(0);
+        s.disconnect(0);
+    });*/
+}
+
+// Partie views des pistes, des graphes (?)
+
+var bufferLoader;
+function loadAllSoundSamples(tracks) {
+
+
+    bufferLoader = new BufferLoader(
+            context,
+            tracks,
+            finishedLoading
+            );
+    bufferLoader.load();
+}
+function finishedLoading(bufferList) {
+    console.log("finished loading");
+
+    buffers = bufferList;
+    buttonPlay.disabled = false;
+}
+
 // ######### SONGS
 // Charger la liste des chansons de la "base de données"
 function loadSongList() {
