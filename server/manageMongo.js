@@ -1,6 +1,18 @@
+var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
+var url = 'mongodb://localhost:27017/prod';
 var assert = require('assert');
 
 module.exports = {
+	/**
+	 * Set a new database
+	 *
+	 * name is the name of the new database
+	 **/
+	setDB: function(name){
+		url = 'mongodb://localhost:27017/'+name;
+	},
+
     /**
      *   insert a document into the database
      *
@@ -9,22 +21,27 @@ module.exports = {
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    insertDocument : function(db,doc,collection,callback) {
-	//check if the json is correct
-	if (doc._id <= 0) {
-	    console.log("JSON incorrect : id<0");
-            //ici le callback n'a pas pas d'argument cela ne génère pas d'erreur mais cela ne fait rien
-	    callback("Id must be greater than 0", null);
-	}
-	//insert the mix if json is correct
-	else{
-	    db.collection(collection).insertOne(doc, function(err, result) {
-		assert.equal(err, null);
-		console.log("Inserted a document into the "+collection+ " collection.");
-		callback(result);
-	    });
-	}
-	
+    insertDocument : function(doc,collection,callback) {
+		MongoClient.connect(url, function(err,db) {
+			if (err) {
+				callback(err);
+				db.close();
+			}
+			else {
+				console.log("Connected correctly to server.");
+				db.collection(collection).insertOne(doc, function (err, result) {
+					db.close();
+					if (err) {
+						callback(err);
+					}
+					else {
+						console.log("Inserted a document into the " + collection + " collection.");
+						callback(null, result);
+					}
+				});
+			}
+
+		});
     },
 
 
@@ -37,18 +54,28 @@ module.exports = {
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    findDocuments: function(db, res, collection, callback) {
-	var cursor = db.collection(collection).find();
-	var result = [];
-	cursor.each(function(err, doc) {
-	    assert.equal(err, null);
-	    if (doc != null) {
-		result.push(doc);
-	    } else {
-		res.write(JSON.stringify(result));
-		callback();
-	    }
-	});
+    findDocuments: function(collection, callback) {
+		MongoClient.connect(url, function(err, db) {
+			if (err) {
+				callback(err);
+				db.close();
+			}
+			else {
+				var cursor = db.collection(collection).find();
+				var result = [];
+				cursor.each(function (err, doc) {
+					if (err) {
+						callback(err);
+					}
+					if (doc != null) {
+						result.push(doc);
+					} else {
+						callback(null, result);
+						db.close();
+					}
+				});
+			}
+		});
     },
 
     
@@ -83,15 +110,26 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     removeDocument: function(db, filter, collection, callback) {
-	db.collection(collection).deleteMany(
-	    filter,
-	    function(err, results) {
-		assert.equal(err, null);
-		//console.log(results);
-		console.log("Document deleted in "+collection);
-		callback();
-	    }
-	);
+		MongoClient.connect(url, function(err, db) {
+			if (err) {
+				callback(err);
+			}
+			else {
+				console.log("Connected correctly to server.");
+				db.collection(collection).deleteMany(
+					filter,
+					function(err, results) {
+						if (err) {
+							callback(err);
+						}
+						else {
+							console.log("Document deleted in "+collection);
+							callback(null, results);
+						}
+					}
+				);
+			}
+		});
     },
 
     /**
@@ -111,4 +149,4 @@ module.exports = {
 					    );
     }
 
-}
+};

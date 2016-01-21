@@ -1,65 +1,55 @@
-var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/prod';
 var fs = require('fs');
 var path = require('path');
 
 var mongo = require('./manageMongo');
+var inputValidator = require('./inputValidator');
 
 var songCollection = "song";
 
 
-module.exports = {    
-
-    /**
-     * Set a new database
-     *
-     * name is the name of the new database
-     **/
-    setDB: function(name){
-	url = 'mongodb://localhost:27017/'+name;
-    }
-
+module.exports = {
+    setDB : function(name) {
+        mongo.setDB(name);
+    },
     //give the song collection name
     getSongDB: function(){
-	return songCollection;
+	    return songCollection;
     },
     
     /**
-     * write the song contained in the songCollection in res
+     * get all songs from database
      *
      * res is the response 
      * callback must be called at the end of the method
      **/
-    getSong: function (res,callback) {
-	MongoClient.connect(url, function(err,db) {
-        if (err) {
-            console.error(err);
-        }
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    mongo.findDocuments(db, res,songCollection, function() {
-            db.close();
-            callback();
-	    });
-	});
-
+    getSong: function (callback) {
+        mongo.findDocuments(songCollection, function(err, results) {
+            callback(err, results);
+        });
     },
-    
+
     /**
-     * add a song in the database
+     *   insert a document into the database with verifications
      *
-     * song is the resource added in the database
+     *   song : song to insert
+     *   callback must be called at the end of the method
      **/
-    postSong: function(song) {
-	MongoClient.connect(url, function(err,db) {
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    mongo.insertDocument(db,song,songCollection, function() {
-		db.close();
-	    });
-	});
+    postSong: function(song, callback) {
+        var songValidation = inputValidator.validateSong(song);
+        if (!songValidation.valid) {
+            callback(songValidation.errorMessage);
+        }
+        else {
+            mongo.insertDocument(song, songCollection, function (err, result) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, result);
+                }
+            });
+        }
     },
 
     /**
@@ -67,29 +57,27 @@ module.exports = {
      *
      * songId is the id of the song that will be removed
      **/
-    removeSong: function(songId) {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
-	    var filter= {};
-	    filter._id = Number(songId);
-	    mongo.removeDocument(db,filter,songCollection, function() {
-		db.close();
-	    });
-	});
+    removeSong: function(songId, callback) {
+        var filter= {};
+        filter._id = Number(songId);
+        mongo.removeDocument(filter,songCollection, function(err, results) {
+            callback(err, results);
+        });
     },
 
     /**
      * Remove all the song from the database
      **/
     removeAllSongs: function() {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
-	    mongo.removeAllDocuments(db,songCollection, function() {
-		db.close();
-	    });
-	});
+        /*
+        MongoClient.connect(url, function(err, db) {
+            assert.equal(null, err);
+            console.log("Connected correctly to server.");
+            mongo.removeAllDocuments(db,songCollection, function() {
+            db.close();
+            });
+        });
+        */
     }
     
 };
