@@ -52,14 +52,33 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 // routing song
 router.get('/song',function(req,res) {
-    song.getSong(res,function(){
-	res.end();
+    song.setDB("test");
+    song.getSong(function(err, results){
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+        res.send(results);
     });
 });
 
 router.post('/song',function(req,res) {
-    song.postSong(req.body);
-    res.end();
+    song.postSong(req.body, function(err, result) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(result));
+        }
+    });
 });
 
 
@@ -69,8 +88,17 @@ router.delete('/allSongs', function(req,res) {
 });
 
 router.delete('/song/:id', function(req,res) {
-    song.removeSong(req.params.id);
-    res.end();
+    song.removeSong(req.params.id, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send("Erreur : "+err);
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
 });
 
 

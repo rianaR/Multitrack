@@ -91,24 +91,6 @@ function initAudioContext() {
 }
 // SOUNDS AUDIO ETC.
 
-
-function resetAllBeforeLoadingANewSong() {
-    // Marche pas, c'est pour tester...
-    console.log('resetAllBeforeLoadingANewSong');
-    // reset array of tracks. If we don't do this we just add new samples to existing
-    // ones... playing two songs at the same time etc.
-    tracks = [];
-
-    stopAllTracks();
-    buttonPlay.disabled = true;
-    divTrack.innerHTML="";
-    /*
-    samples.forEach(function(s) {
-        s.stop(0);
-        s.disconnect(0);
-    });*/
-}
-
 // ######### SONGS
 // Charger la liste des chansons de la "base de données"
 function loadSongList() {
@@ -134,18 +116,6 @@ function loadSongList() {
             console.log(songName);
 
             $("<option />", {value: songName, text: songName}).appendTo(s);
-
-
-            /*
-            var list = document.getElementById("songs");
-            var li = document.createElement('li');
-            li.textContent = songName;
-            button = document.createElement('button');
-            button.setAttribute("onclick", "loadTrackList('" + songName + "');");
-            button.textContent = "load";
-            li.appendChild(button);
-            list.appendChild(li);
-            */
         });
     };
     xhr.send();
@@ -165,8 +135,6 @@ function getTrackName(elem) {
 
 // Charger et afficher la liste des pistes d'une chanson
 function loadTrackList(songName) {
-resetAllBeforeLoadingANewSong();
-
     var xhr = new XMLHttpRequest();
     xhr.open('GET', "track/" + songName, true);
     xhr.onload = function(e) {
