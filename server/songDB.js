@@ -7,18 +7,41 @@ var path = require('path');
 
 var songCollection = "song";
 
+/**
+*   insert a document into the database
+*
+*   db is the mongodb client
+*   doc is the song to insert
+*   collection is the name of the table in mongodb
+*   callback must be called at the end of the method
+**/
 var insertDocument = function(db,doc,collection,callback) {
+    //check if the json is correct
     if (doc._id <= 0) {
+	console.log("id<0");
         callback("Id must be greater than 0", null);
     }
-   db.collection(collection).insertOne(doc, function(err, result) {
-    assert.equal(err, null);
-    console.log("Inserted a document into the "+collection+ " collection.");
-    callback(result);
-  });
+    //insert the song if json is correct
+    else{
+	console.log("insert");
+	db.collection(collection).insertOne(doc, function(err, result) {
+	    assert.equal(err, null);
+	    console.log("Inserted a document into the "+collection+ " collection.");
+	    callback(result);
+	});
+    }
 };
 
 
+
+/**
+*   find a document into the database
+*
+*   db is the mongodb client
+*   res is res where method wil write the result
+*   collection is the name of the table in mongodb
+*   callback must be called at the end of the method
+**/
 var findDocuments = function(db, res, collection, callback) {
    var cursor = db.collection(collection).find();
     var result = [];
@@ -33,6 +56,14 @@ var findDocuments = function(db, res, collection, callback) {
    });
 };
 
+/**
+*   remove a document from the database
+*
+*   db is the mongodb client
+*   id is the id of the document to remove
+*   collection is the name of the table in mongodb
+*   callback must be called at the end of the method
+**/
 var removeSong = function(db, id, collection, callback) {
     var filter= {};
     filter._id = Number(id);
@@ -47,6 +78,13 @@ var removeSong = function(db, id, collection, callback) {
    );
 };
 
+/**
+*   remove all from the database
+*
+*   db is the mongodb client
+*   collection is the name of the table in mongodb
+*   callback must be called at the end of the method
+**/
 var removeAllSongs = function(db, collection, callback) {
    db.collection(collection).deleteMany({},
       function(err, results) {
@@ -60,10 +98,17 @@ var removeAllSongs = function(db, collection, callback) {
 
 module.exports = {    
 
+    //give the song collection name
     getSongDB: function(){
 	return songCollection;
     },
     
+    /**
+     * write the song contained in the songCollection in res
+     *
+     * res is the response 
+     * callback must be called at the end of the method
+     **/
     getSong: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
         if (err) {
@@ -79,6 +124,11 @@ module.exports = {
 
     },
     
+    /**
+     * add a song in the database
+     *
+     * song is the resource added in the database
+     **/
     postSong: function(song) {
 	MongoClient.connect(url, function(err,db) {
 	    assert.equal(null,err);
@@ -89,6 +139,11 @@ module.exports = {
 	});
     },
 
+    /**
+     * remove a song in the database
+     *
+     * songId is the id of the song that will be removed
+     **/
     removeSong: function(songId) {
 	MongoClient.connect(url, function(err, db) {
 	    assert.equal(null, err);
@@ -99,6 +154,9 @@ module.exports = {
 	});
     },
 
+    /**
+     * Remove all the song from the database
+     **/
     removeAllSongs: function() {
 	MongoClient.connect(url, function(err, db) {
 	    assert.equal(null, err);
