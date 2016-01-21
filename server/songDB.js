@@ -8,7 +8,6 @@ var path = require('path');
 var songCollection = "song";
 
 var insertDocument = function(db,doc,collection,callback) {
-    console.log(doc);
     if (doc._id <= 0) {
         callback("Id must be greater than 0", null);
     }
