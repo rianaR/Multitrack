@@ -68,6 +68,7 @@ router.get('/song',function(req,res) {
 });
 
 router.post('/song',function(req,res) {
+    song.setDB("test");
     song.postSong(req.body, function(err, result) {
         res.header('Content-Type', "application/json");
         if (err) {
@@ -83,11 +84,22 @@ router.post('/song',function(req,res) {
 
 
 router.delete('/allSongs', function(req,res) {
-    song.removeAllSongs(req.params.id);
-    res.end();
+    song.setDB("test");
+    song.removeAllSongs(function(err,results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send("Erreur : "+err);
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
 });
 
 router.delete('/song/:id', function(req,res) {
+    song.setDB("test");
     song.removeSong(req.params.id, function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {

@@ -109,7 +109,7 @@ module.exports = {
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    removeDocument: function(db, filter, collection, callback) {
+    removeDocument: function(filter, collection, callback) {
 		MongoClient.connect(url, function(err, db) {
 			if (err) {
 				callback(err);
@@ -139,14 +139,27 @@ module.exports = {
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    removeAllDocuments: function(db, collection, callback) {
-	db.collection(collection).deleteMany({},
-					     function(err, results) {
-						 assert.equal(err, null);
-						 console.log("All songs deleted.");
-						 callback();
-					     }
-					    );
+    removeAllDocuments: function(collection, callback) {
+		MongoClient.connect(url, function(err, db) {
+			if (err) {
+				callback(err);
+			}
+			else {
+				console.log("Connected correctly to server.");
+				db.collection(collection).deleteMany({},
+					function (err, results) {
+						if (err) {
+							console.log("Error on delete");
+						}
+						else {
+							console.log("All songs deleted");
+						}
+						callback(err, results);
+						db.close();
+					}
+				);
+			}
+		});
     }
 
 };

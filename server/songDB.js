@@ -68,16 +68,9 @@ module.exports = {
     /**
      * Remove all the song from the database
      **/
-    removeAllSongs: function() {
-        /*
-        MongoClient.connect(url, function(err, db) {
-            assert.equal(null, err);
-            console.log("Connected correctly to server.");
-            mongo.removeAllDocuments(db,songCollection, function() {
-            db.close();
-            });
+    removeAllSongs: function(callback) {
+        mongo.removeAllDocuments(songCollection, function(err, results) {
+            callback(err, results);
         });
-        */
     }
-    
 };
