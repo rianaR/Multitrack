@@ -10,12 +10,20 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     insertDocument : function(db,doc,collection,callback) {
-	console.log("insert");
-	db.collection(collection).insertOne(doc, function(err, result) {
-	    assert.equal(err, null);
-	    console.log("Inserted a document into the "+collection+ " collection.");
-	    callback(result);
-	});
+	//check if the json is correct
+	if (doc._id <= 0) {
+	    console.log("JSON incorrect : id<0");
+            //ici le callback n'a pas pas d'argument cela ne génère pas d'erreur mais cela ne fait rien
+	    callback("Id must be greater than 0", null);
+	}
+	//insert the mix if json is correct
+	else{
+	    db.collection(collection).insertOne(doc, function(err, result) {
+		assert.equal(err, null);
+		console.log("Inserted a document into the "+collection+ " collection.");
+		callback(result);
+	    });
+	}
 	
     },
 
