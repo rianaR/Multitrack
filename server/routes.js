@@ -76,7 +76,13 @@ router.delete('/song/:id', function(req,res) {
 
 // routing mix
 router.get('/mix',function(req,res) {
-    mix.getMix(res,function(){
+    mix.getAllMix(res,function(){
+	res.end();
+    });
+});
+
+router.get('/mix/:songId',function(req,res) {
+    mix.getMixBySong(res,req.params.songId,function(){
 	res.end();
     });
 });

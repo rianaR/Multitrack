@@ -19,20 +19,45 @@ module.exports = {
      **/
     setDB: function(name){
 	url = 'mongodb://localhost:27017/'+name;
-    }
+    },
 
     //give the mix collection name
     getMixDB: function(){
 	return mixCollection;
     },
-    
+       
+
+    /**
+     * write the mix which match with the songId contained in the mixCollection in res 
+     *
+     * res is the response 
+     * songId is the id of the song which match with the mix
+     * callback must be called at the end of the method
+     **/
+    getMixBySong: function (res,songId,callback) {
+	MongoClient.connect(url, function(err,db) {
+        if (err) {
+            console.error(err);
+        }
+	    assert.equal(null,err);
+	    console.log("Connected correctly to server.");
+	    var filter = {}
+	    filter.songId = Number(songId);
+	    mongo.findDocumentsByFilter(db, res,filter,mixCollection, function() {
+            db.close();
+            callback();
+	    });
+	});
+
+    },
+
     /**
      * write the mix contained in the mixCollection in res
      *
      * res is the response 
      * callback must be called at the end of the method
      **/
-    getMix: function (res,callback) {
+    getAllMix: function (res,callback) {
 	MongoClient.connect(url, function(err,db) {
         if (err) {
             console.error(err);

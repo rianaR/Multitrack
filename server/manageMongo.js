@@ -51,6 +51,29 @@ module.exports = {
 	});
     },
 
+    
+    /**
+     *   find a document into the database
+     *
+     *   db is the mongodb client
+     *   res is res where method wil write the result
+     *   collection is the name of the table in mongodb
+     *   callback must be called at the end of the method
+     **/
+    findDocumentsByFilter: function(db, res, filter, collection, callback) {
+	var cursor = db.collection(collection).find(filter);
+	var result = [];
+	cursor.each(function(err, doc) {
+	    assert.equal(err, null);
+	    if (doc != null) {
+		result.push(doc);
+	    } else {
+		res.write(JSON.stringify(result));
+		callback();
+	    }
+	});
+    },
+
     /**
      *   remove a document from the database
      *
