@@ -1,113 +1,83 @@
-var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/test';
 var fs = require('fs');
 var path = require('path');
 
+var mongo = require('./manageMongo');
+var inputValidator = require('./inputValidator');
+
 var songCollection = "song";
 
-var insertDocument = function(db,doc,collection,callback) {
-    console.log(doc);
-    if (doc._id <= 0) {
-        callback("Id must be greater than 0", null);
-    }
-   db.collection(collection).insertOne(doc, function(err, result) {
-    assert.equal(err, null);
-    console.log("Inserted a document into the "+collection+ " collection.");
-    callback(result);
-  });
-};
 
-
-var findDocuments = function(db, res, collection, callback) {
-   var cursor = db.collection(collection).find();
-    var result = [];
-   cursor.each(function(err, doc) {
-      assert.equal(err, null);
-      if (doc != null) {
-          result.push(doc);
-      } else {
-	    res.write(JSON.stringify(result));
-          callback();
-      }
-   });
-};
-
-var removeSong = function(db, id, collection, callback) {
-    var filter= {};
-    filter._id = Number(id);
-    db.collection(collection).deleteMany(
-      filter,
-      function(err, results) {
-	  assert.equal(err, null);
-	  //console.log(results);
-	  console.log("Song id="+id+" deleted.");
-          callback();
-      }
-   );
-};
-
-var removeAllSongs = function(db, collection, callback) {
-   db.collection(collection).deleteMany({},
-      function(err, results) {
-	  assert.equal(err, null);
-	  console.log("All songs deleted.");
-          callback();
-      }
-   );
-};
-
-
-module.exports = {    
-
+module.exports = {
+    setDB : function(name) {
+        mongo.setDB(name);
+    },
+    //give the song collection name
     getSongDB: function(){
-	return songCollection;
+	    return songCollection;
     },
     
-    getSong: function (res,callback) {
-	MongoClient.connect(url, function(err,db) {
-        if (err) {
-            console.error(err);
+    /**
+     * get all songs from database
+     *
+     * res is the response 
+     * callback must be called at the end of the method
+     **/
+    getSong: function (callback) {
+        mongo.findDocuments(songCollection, function(err, results) {
+            callback(err, results);
+        });
+    },
+
+    /**
+     *   insert a document into the database with verifications
+     *
+     *   song : song to insert
+     *   callback must be called at the end of the method
+     **/
+    postSong: function(song, callback) {
+        var songValidation = inputValidator.validateSong(song);
+        if (!songValidation.valid) {
+            callback(songValidation.errorMessage);
         }
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    findDocuments(db, res,songCollection, function() {
-            db.close();
-            callback();
-	    });
-	});
-
-    },
-    
-    postSong: function(song) {
-	MongoClient.connect(url, function(err,db) {
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    insertDocument(db,song,songCollection, function() {
-		db.close();
-	    });
-	});
+        else {
+            mongo.insertDocument(song, songCollection, function (err, result) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, result);
+                }
+            });
+        }
     },
 
-    removeSong: function(songId) {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
-	    removeSong(db,songId,songCollection, function() {
-		db.close();
-	    });
-	});
+    /**
+     * remove a song in the database
+     *
+     * songId is the id of the song that will be removed
+     **/
+    removeSong: function(songId, callback) {
+        var filter= {};
+        filter._id = Number(songId);
+        mongo.removeDocument(filter,songCollection, function(err, results) {
+            callback(err, results);
+        });
     },
 
+    /**
+     * Remove all the song from the database
+     **/
     removeAllSongs: function() {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
-	    removeAllSongs(db,songCollection, function() {
-		db.close();
-	    });
-	});
+        /*
+        MongoClient.connect(url, function(err, db) {
+            assert.equal(null, err);
+            console.log("Connected correctly to server.");
+            mongo.removeAllDocuments(db,songCollection, function() {
+            db.close();
+            });
+        });
+        */
     }
     
 };

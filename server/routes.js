@@ -9,7 +9,7 @@ var router = express.Router();
 var TRACKS_PATH = 'multitrack/';
 
 var song = require('./songDB');
-
+var mix = require('./mixDB');
 
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
@@ -50,29 +50,86 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 });
 
 
-// routing
+// routing song
 router.get('/song',function(req,res) {
-    song.getSong(res,function(){
-	res.end();
+    song.setDB("test");
+    song.getSong(function(err, results){
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+        res.send(results);
     });
 });
 
 router.post('/song',function(req,res) {
-    song.postSong(req.body);
-    res.end();
+    song.postSong(req.body, function(err, result) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(result));
+        }
+    });
 });
 
 
-router.delete('/songs', function(req,res) {
+router.delete('/allSongs', function(req,res) {
     song.removeAllSongs(req.params.id);
     res.end();
 });
 
 router.delete('/song/:id', function(req,res) {
-    song.removeSong(req.params.id);
+    song.removeSong(req.params.id, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = 400;
+            res.send("Erreur : "+err);
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
+});
+
+
+// routing mix
+router.get('/mix',function(req,res) {
+    mix.getAllMix(res,function(){
+	res.end();
+    });
+});
+
+router.get('/mix/:songId',function(req,res) {
+    mix.getMixBySong(res,req.params.songId,function(){
+	res.end();
+    });
+});
+
+router.post('/mix',function(req,res) {
+    mix.postMix(req.body);
     res.end();
 });
 
+
+router.delete('/allMix', function(req,res) {
+    mix.removeAllMix(req.params.id);
+    res.end();
+});
+
+router.delete('/mix/:id', function(req,res) {
+    mix.removeMix(req.params.id);
+    res.end();
+});
 
 
 function getTracks(callback) {
