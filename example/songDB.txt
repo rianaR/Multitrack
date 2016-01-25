@@ -5,7 +5,7 @@ json example for create a song with POST /song:
     "_id": 1,
     "artist": "Queen",
     "song": "We Are The Champions",
-    "released": "1977",
+    "released": 1977,
     "path": "multitrack/queen_champions/",
     "track": [
       {

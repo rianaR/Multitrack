@@ -3,7 +3,7 @@
     "_id": 1,
     "artist": "Queen",
     "song": "We Are The Champions",
-    "released": "1977",
+    "released": 1977,
     "path": "multitrack/queen_champions/",
     "track": [
       {
@@ -36,7 +36,7 @@
     "_id": 2,
     "artist": "James Brown",
     "song": "Get Up",
-    "released": "1970",
+    "released": 1970,
     "path": "multitrack/jamesbrown_get/",
     "track": [
       {
@@ -65,7 +65,7 @@
     "_id": 3,
     "artist": "Deep Purple",
     "song": "Smoke On The Water",
-    "released": "1972",
+    "released": 1972,
     "path": "multitrack/deep_smoke/",
     "track": [
       {
@@ -90,7 +90,7 @@
     "_id": 4,
     "artist": "Bob Marley",
     "song": "Is This Love",
-    "released": "1978",
+    "released": 1978,
     "path": "multitrack/bob_love/",
     "track": [
       {
@@ -155,7 +155,7 @@
     "_id": 5,
     "artist": "Amy Winehouse",
     "song": "Rehab",
-    "released": "2006",
+    "released": 2006,
     "path": "multitrack/amy_rehab/",
     "track": [
       {
