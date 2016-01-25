@@ -110,10 +110,6 @@
         "path": "track/bob_love/sound/extra.mp3"
       },
       {
-        "name": "batterie",
-        "path": "track/bob_love/sound/batterie.mp3"
-      },
-      {
         "name": "guitare1",
         "path": "track/bob_love/sound/guitare1.mp3"
       },
@@ -150,10 +146,6 @@
         "path": "track/bob_love/sound/trombone.mp3"
       },
       {
-        "name": "trompette",
-        "path": "track/bob_love/sound/trompette.mp3"
-      },
-      {
         "name": "voix",
         "path": "track/bob_love/sound/voix.mp3"
       }
@@ -176,7 +168,7 @@
       },
       {
         "name": "cuivre",
-        "path": "track/amy_rehab/sound/cuivre.mp3"
+        "path": "track/amy_rehab/sound/cuivres.mp3"
       },
       {
         "name": "guitare",
