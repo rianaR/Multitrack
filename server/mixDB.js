@@ -1,7 +1,4 @@
-var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-var url = 'mongodb://localhost:27017/prod';
 var fs = require('fs');
 var path = require('path');
 
@@ -18,7 +15,7 @@ module.exports = {
      * name is the name of the new database
      **/
     setDB: function(name){
-	url = 'mongodb://localhost:27017/'+name;
+        mongo.setDB(name);
     },
 
     //give the mix collection name
