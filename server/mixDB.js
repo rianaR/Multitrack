@@ -27,7 +27,6 @@ module.exports = {
     /**
      * write the mix which match with the songId contained in the mixCollection in res 
      *
-     * res is the response 
      * songId is the id of the song which match with the mix
      * callback must be called at the end of the method
      **/

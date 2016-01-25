@@ -20,7 +20,6 @@ module.exports = {
     /**
      * get all songs from database
      *
-     * res is the response 
      * callback must be called at the end of the method
      **/
     getSong: function (callback) {
@@ -32,7 +31,7 @@ module.exports = {
     /**
      *   insert a document into the database with verifications
      *
-     *   song : song to insert
+     *   song is the song to insert
      *   callback must be called at the end of the method
      **/
     postSong: function(song, callback) {
