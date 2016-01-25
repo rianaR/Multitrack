@@ -52,7 +52,6 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 // routing song
 router.get('/song',function(req,res) {
-    song.setDB("test");
     song.getSong(function(err, results){
         res.header('Content-Type', "application/json");
         if (err) {
@@ -67,7 +66,6 @@ router.get('/song',function(req,res) {
 });
 
 router.post('/song',function(req,res) {
-    song.setDB("test");
     song.postSong(req.body, function(err, result) {
         res.header('Content-Type', "application/json");
         if (err) {
@@ -83,7 +81,6 @@ router.post('/song',function(req,res) {
 
 
 router.delete('/allSongs', function(req,res) {
-    song.setDB("test");
     song.removeAllSongs(function(err,results) {
         res.header('Content-Type', "application/json");
         if (err) {
@@ -97,7 +94,6 @@ router.delete('/allSongs', function(req,res) {
 });
 
 router.delete('/song/:id', function(req,res) {
-    song.setDB("test");
     song.removeSong(req.params.id, function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {

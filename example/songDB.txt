@@ -2,36 +2,35 @@ json example for create a song with POST /song:
 
 
 {
-	"_id":1,
-	"artist":"Queen",
-	"song":"We Are The Champions",
-	"released":"1977",
-	"path":"multitrack/queen_champions/",
-	"track": [
-			{
-			"name":"basse",
-			"path":"basse.mp3"
-		 	},
-			{
-			"name":"batterie",
-		 	"path":"batterie.mp3"
-			},
-			{
-			"name":"guitare",
-			"path":"guitare.mp3"
-			},
-			{
-            "name":"guitare2",
-            "path":"guitare2.mp3"
-            },
-			{
-			"name":"piano",
-		 	"path":"piano.mp3"
-			},
-			{
-			"name":"voix",
-			"path":"voix.mp3"
-			}
-		 ]
+    "_id": 1,
+    "artist": "Queen",
+    "song": "We Are The Champions",
+    "released": "1977",
+    "path": "multitrack/queen_champions/",
+    "track": [
+      {
+        "name": "basse",
+        "path": "track/queen_champions/sound/basse.mp3"
+      },
+      {
+        "name": "batterie",
+        "path": "track/queen_champions/sound/batterie.mp3"
+      },
+      {
+        "name": "guitare",
+        "path": "track/queen_champions/sound/guitare.mp3"
+      },
+      {
+        "name": "guitare2",
+        "path": "track/queen_champions/sound/guitare2.mp3"
+      },
+      {
+        "name": "piano",
+        "path": "track/queen_champions/sound/piano.mp3"
+      },
+      {
+        "name": "voix",
+        "path": "track/queen_champions/sound/voix.mp3"
+      }
+    ]
 }
-

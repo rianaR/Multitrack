@@ -142,7 +142,6 @@ module.exports = {
 							console.log("Document in "+collection+"has been deleted");
 							callback(null, deleted);
 						}
-						callback();
 					}
 				);
 			}

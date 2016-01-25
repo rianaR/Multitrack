@@ -7,6 +7,7 @@ var song = require('../server/songDB');
 MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
     if(err) throw err;
     db.collection(song.getSongDB()).deleteMany({}, function(err, results) {
+        console.log("deleted");
         var data = fs.readFileSync("data.json");
         var JSONData = JSON.parse(data);
         db.collection(song.getSongDB()).insertMany(JSONData, function(err, result) {
