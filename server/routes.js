@@ -140,19 +140,44 @@ router.get('/mix/:songId',function(req,res) {
 });
 
 router.post('/mix',function(req,res) {
-    mix.postMix(req.body);
-    res.end();
+    mix.postMix(req.body, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
+
 });
 
 
 router.delete('/allMix', function(req,res) {
-    mix.removeAllMix(req.params.id);
-    res.end();
+    mix.removeAllMix(req.params.id, function(err, deleted) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(deleted));
+        }
+    });
 });
 
 router.delete('/mix/:id', function(req,res) {
-    mix.removeMix(req.params.id);
-    res.end();
+    mix.removeMix(req.params.id, function(err, deleted) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(deleted));
+        }
+    });
 });
 
 

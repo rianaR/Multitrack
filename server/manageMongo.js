@@ -133,14 +133,14 @@ module.exports = {
 				console.log("Connected correctly to server.");
 				db.collection(collection).deleteMany(
 					filter,
-					function(err, results) {
+					function(err, deleted) {
 						if (err) {
 							console.log("Error on deleting document");
 							callback(err);
 						}
 						else {
 							console.log("Document in "+collection+"has been deleted");
-							callback(null, results);
+							callback(null, deleted);
 						}
 						callback();
 					}
@@ -164,14 +164,14 @@ module.exports = {
 			else {
 				console.log("Connected correctly to server.");
 				db.collection(collection).deleteMany({},
-					function (err, results) {
+					function (err, deleted) {
 						if (err) {
 							console.log("Error on deleting all documents");
 							callback(err);
 						}
 						else {
 							console.log("All documents in "+collection+"have been deleted");
-							callback(err, results);
+							callback(err, deleted);
 						}
 						db.close();
 					}

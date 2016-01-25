@@ -59,16 +59,10 @@ module.exports = {
      *
      * mix is the resource added in the database
      **/
-    postMix: function(mix) {
-
-	MongoClient.connect(url, function(err,db) {
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    mongo.insertDocument(db,mix,mixCollection, function() {
-		db.close();
+    postMix: function(mix, callback) {
+	    mongo.insertDocument(mix, mixCollection, function(err, results) {
+			callback(err, results);
 	    });
-	});
-
     },
 
     /**
@@ -76,29 +70,21 @@ module.exports = {
      *
      * mixId is the id of the mix that will be removed
      **/
-    removeMix: function(mixId) {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
+    removeMix: function(mixId, callback) {
 	    var filter= {};
 	    filter._id = Number(mixId);
-	    mongo.removeDocument(db,filter,mixCollection, function() {
-		db.close();
+	    mongo.removeDocument(filter,mixCollection, function(err, deleted) {
+			callback(err, deleted);
 	    });
-	});
     },
 
     /**
      * Remove all the mix from the database
      **/
-    removeAllMix: function() {
-	MongoClient.connect(url, function(err, db) {
-	    assert.equal(null, err);
-	    console.log("Connected correctly to server.");
-	    mongo.removeAllDocuments(db,mixCollection, function() {
-		db.close();
+    removeAllMix: function(callback) {
+	    mongo.removeAllDocuments(db,mixCollection, function(err, deleted) {
+			callback(err, deleted);
 	    });
-	});
     }
     
 };
