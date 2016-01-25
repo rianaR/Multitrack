@@ -79,7 +79,7 @@ module.exports = {
      * Remove all the mix from the database
      **/
     removeAllMix: function(callback) {
-	    mongo.removeAllDocuments(db,mixCollection, function(err, deleted) {
+	    mongo.removeAllDocuments(mixCollection, function(err, deleted) {
 			callback(err, deleted);
 	    });
     }
