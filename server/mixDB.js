@@ -34,21 +34,12 @@ module.exports = {
      * songId is the id of the song which match with the mix
      * callback must be called at the end of the method
      **/
-    getMixBySong: function (res,songId,callback) {
-	MongoClient.connect(url, function(err,db) {
-        if (err) {
-            console.error(err);
-        }
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
+    getMixBySong: function (songId,callback) {
 	    var filter = {}
 	    filter.songId = Number(songId);
-	    mongo.findDocumentsByFilter(db, res,filter,mixCollection, function() {
-            db.close();
-            callback();
+	    mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
+            callback(err, results);
 	    });
-	});
-
     },
 
     /**
@@ -57,19 +48,10 @@ module.exports = {
      * res is the response 
      * callback must be called at the end of the method
      **/
-    getAllMix: function (res,callback) {
-	MongoClient.connect(url, function(err,db) {
-        if (err) {
-            console.error(err);
-        }
-	    assert.equal(null,err);
-	    console.log("Connected correctly to server.");
-	    mongo.findDocuments(db, res,mixCollection, function() {
-            db.close();
-            callback();
+    getAllMix: function (callback) {
+	    mongo.findDocuments(mixCollection, function(err, results) {
+            callback(err, results);
 	    });
-	});
-
     },
     
     /**

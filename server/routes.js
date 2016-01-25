@@ -88,8 +88,7 @@ router.delete('/allSongs', function(req,res) {
     song.removeAllSongs(function(err,results) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.statusCode = 400;
-            res.send("Erreur : "+err);
+            res.send(JSON.stringify({error : 1}));
         }
         else {
             res.statusCode = 200;
@@ -103,8 +102,7 @@ router.delete('/song/:id', function(req,res) {
     song.removeSong(req.params.id, function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.statusCode = 400;
-            res.send("Erreur : "+err);
+            res.send(JSON.stringify({error : 1}));
         }
         else {
             res.statusCode = 200;
@@ -116,14 +114,28 @@ router.delete('/song/:id', function(req,res) {
 
 // routing mix
 router.get('/mix',function(req,res) {
-    mix.getAllMix(res,function(){
-	res.end();
+    mix.getAllMix(function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
     });
 });
 
 router.get('/mix/:songId',function(req,res) {
-    mix.getMixBySong(res,req.params.songId,function(){
-	res.end();
+    mix.getMixBySong(req.params.songId,function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify({error : 1}));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
     });
 });
 

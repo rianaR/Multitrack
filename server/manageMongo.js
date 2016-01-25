@@ -30,7 +30,6 @@ module.exports = {
 			else {
 				console.log("Connected correctly to server.");
 				db.collection(collection).insertOne(doc, function (err, result) {
-					db.close();
 					if (err) {
 						callback(err);
 					}
@@ -38,6 +37,7 @@ module.exports = {
 						console.log("Inserted a document into the " + collection + " collection.");
 						callback(null, result);
 					}
+					db.close();
 				});
 			}
 
@@ -66,12 +66,15 @@ module.exports = {
 				cursor.each(function (err, doc) {
 					if (err) {
 						callback(err);
-					}
-					if (doc != null) {
-						result.push(doc);
-					} else {
-						callback(null, result);
 						db.close();
+					}
+					else {
+						if (doc != null) {
+							result.push(doc);
+						} else {
+							callback(null, result);
+							db.close();
+						}
 					}
 				});
 			}
@@ -87,18 +90,29 @@ module.exports = {
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    findDocumentsByFilter: function(db, res, filter, collection, callback) {
-	var cursor = db.collection(collection).find(filter);
-	var result = [];
-	cursor.each(function(err, doc) {
-	    assert.equal(err, null);
-	    if (doc != null) {
-		result.push(doc);
-	    } else {
-		res.write(JSON.stringify(result));
-		callback();
-	    }
-	});
+    findDocumentsByFilter: function(filter, collection, callback) {
+		MongoClient.connect(url, function(err, db) {
+			if (err) {
+				callback(err);
+				db.close();
+			}
+			else {
+				var cursor = db.collection(collection).find(filter);
+				var result = [];
+				cursor.each(function (err, doc) {
+					if (err) {
+						callback(err);
+						db.close();
+					}
+					if (doc != null) {
+						result.push(doc);
+					} else {
+						callback(err, result);
+						db.close();
+					}
+				});
+			}
+		});
     },
 
     /**
@@ -112,6 +126,7 @@ module.exports = {
     removeDocument: function(filter, collection, callback) {
 		MongoClient.connect(url, function(err, db) {
 			if (err) {
+				db.close();
 				callback(err);
 			}
 			else {
@@ -120,12 +135,14 @@ module.exports = {
 					filter,
 					function(err, results) {
 						if (err) {
+							console.log("Error on deleting document");
 							callback(err);
 						}
 						else {
-							console.log("Document deleted in "+collection);
+							console.log("Document in "+collection+"has been deleted");
 							callback(null, results);
 						}
+						callback();
 					}
 				);
 			}
@@ -149,12 +166,13 @@ module.exports = {
 				db.collection(collection).deleteMany({},
 					function (err, results) {
 						if (err) {
-							console.log("Error on delete");
+							console.log("Error on deleting all documents");
+							callback(err);
 						}
 						else {
-							console.log("All songs deleted");
+							console.log("All documents in "+collection+"have been deleted");
+							callback(err, results);
 						}
-						callback(err, results);
 						db.close();
 					}
 				);
