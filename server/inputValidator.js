@@ -1,35 +1,49 @@
 var Validator = require("jsonschema").Validator;
-var validator = new Validator();
 
 var NO_ERROR = 0;
 var ERROR_BAD_ID = 1;
 
-var fields = ["_id", "artist", "song", "released", "path", "track"];
 
 var InputValidator = {
     validateSong: function (song) {
         var songSchema = {
+            "id" : "/Song",
             "type" : "Object",
             "properties" : {
                 "artist" : { "type" : "string" },
                 "song" : { "type" : "string" },
-                "released" : {  }
+                "released" : { "type" : "integer", "minimum" : 1  },
+                "path" : { "type" : "string" },
+                "track" : {
+                    "type": "array",
+                    "items": {
+                        "properties" :{
+                            "name" : { "type" : "string" },
+                            "path" : { "type" : "string" }
+                        }
+                    }
+                }
             }
         };
         var result = {
             valid : true
         };
-        var keys = Object.keys(song);
-        for (var i = 0; i < fields.length; i++) {
-            if (keys.indexOf(fields[i]) == -1) {
-                result.valid = false;
-                result.errorMessage = fields[i]+" field is missing.";
-                return result;
-            }
+        /*
+        var validator = new Validator();
+        result.errorMessage = validator.validate(song, songSchema);
+
+        if (validator.validate(song, songSchema)) {
+            result.valid = true;
+            result.errorMessage = "Song is OK"
         }
+        else {
+            result.valid = false;
+            result.errorMessage = "Problem with song"
 
+        }
+        */
 
-
+        return result;
     }
 };
 
