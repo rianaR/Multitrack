@@ -19,4 +19,66 @@ describe("mix test",function(){
 	});
     });
 
+    it('should add and get a mix',function(done) {
+	
+	mix1 = { _id:1, songId:1 }
+	mix.postMix(mix1,function(err,results){
+	    assert.equal(err,null);
+	    mix.getMixBySong(1,function(err,results){
+		assert.equal(err,null);
+		tab = [];
+		tab.push(mix1);
+		assert.deepEqual(results,tab);
+		done();
+	    });
+	});
+    });
+
+    it('should get all mix',function(done) {
+	
+	mix1 = { _id:1 };
+	mix2 = { _id:2 };
+	
+	mix.postMix(mix1,function(err,results){
+	    assert.equal(err,null);
+	    
+	    mix.postMix(mix2,function(err,results){
+	    
+		mix.getAllMix(function(err,results){
+		    assert.equal(err,null);
+		    tab = [];
+		    tab.push(mix1);
+		    tab.push(mix2);
+		    assert.deepEqual(results,tab);
+		    done();
+		});
+	    });
+	});
+    });
+
+    it('should remove a mix',function(done) {
+	
+	mix1 = { _id:1 };
+	mix2 = { _id:2 };
+	
+	mix.postMix(mix1,function(err,results){
+	    assert.equal(err,null);
+	    
+	    mix.postMix(mix2,function(err,results){
+		assert.equal(err,null);
+		
+		mix.removeMix(1,function(err,results){
+
+		    mix.getAllMix(function(err,results){
+			assert.equal(err,null);
+			tab = [];
+			tab.push(mix2);
+			assert.deepEqual(results,tab);
+			done();
+		    });
+		});
+	    });
+	});
+    });
+
 });
