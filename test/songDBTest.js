@@ -41,149 +41,146 @@ function createSongJSON(id){
     }
 }
 
-describe('songDB', function() {
 
-    beforeEach(function(){
-	song.removeAllSongs(function(){});
+describe('function test', function() {
 
-	song1 = createSongJSON(1);
-
+    
+    beforeEach(function(done){
+	song.removeAllSongs(function(){
+	    song1 = createSongJSON(1);
+	    done();
+	});
     });
 
-    describe('function test', function() {
+    it('should return the song collection name',function(){
+	assert.equal(song.getSongDB(),'song');
+    });
+    
+    it('should empty the collection', function(done) {
 
-	it('should return the song collection name',function(){
-	    assert.equal(song.getSongDB(),'song');
+	song.getSong(function(err,results){
+	    tab = [];
+	    assert.deepEqual(err,null);
+	    assert.deepEqual([],tab);
+	    done();
 	});
-	
-	it('should empty the collection', function(done) {
+    });
+
+    it('should add a new song', function(done){
+	song.postSong(song1,function(err,results) {
+	    assert.equal(err,null);
 
 	    song.getSong(function(err,results){
 		tab = [];
-		assert.deepEqual(err,null);
-		assert.deepEqual([],tab);
-	    done();
+		tab.push(song1);
+		assert.equal(err,null);
+		assert.deepEqual(results,tab);
+		done();
 	    });
 	});
+    });
+    
+    it('should remove a song', function(done){
+	song.postSong(song1,function(err,results) {
+	    assert.equal(err,null);
 
-	it('should add a new song', function(done){
-	    song.postSong(song1,function(err,results) {
+	    song.removeSong(1, function(err, results) {
 		assert.equal(err,null);
 
 		song.getSong(function(err,results){
-		    tab = [];
-		    tab.push(song1);
 		    assert.equal(err,null);
-		    assert.deepEqual(results,tab);
+		    assert.deepEqual(results,[]);
+
 		    done();
 		});
 	    });
 	});
-	
-	it('should remove a song', function(done){
-	    song.postSong(song1,function(err,results) {
-		assert.equal(err,null);
+    });
 
-		song.removeSong(1, function(err, results) {
+    
+    it('should remove a song in a list of song', function(done){
+
+	song2 = createSongJSON(2);
+	song3 = createSongJSON(3);
+
+	song.postSong(song1,function(err,results) {
+	    assert.equal(err,null);
+
+	    song.postSong(song2,function(err,results) {
+		assert.equal(err,null);   
+
+		song.postSong(song3,function(err,results) {
 		    assert.equal(err,null);
 
-		    song.getSong(function(err,results){
-			assert.equal(err,null);
-			assert.deepEqual(results,[]);
+		    song.removeSong(2, function(err, results) {
+			assert.equal(err,null);		    
 
-			done();
-		    });
-		});
-	    });
-	});
+			tab = [];
+			tab.push(song1);
+			tab.push(song3);
 
-	
-	it('should remove a song in a list of song', function(done){
+			song.getSong(function(err,results){
 
-	    song2 = createSongJSON(2);
-	    song3 = createSongJSON(3);
-
-	    song.postSong(song1,function(err,results) {
-		assert.equal(err,null);
-
-		song.postSong(song2,function(err,results) {
-		    assert.equal(err,null);   
-
-		    song.postSong(song3,function(err,results) {
-			assert.equal(err,null);
-
-			song.removeSong(2, function(err, results) {
-			    assert.equal(err,null);		    
-
-			    tab = [];
-			    tab.push(song1);
-			    tab.push(song3);
-
-			    song.getSong(function(err,results){
-
-				assert.equal(err,null);
-				assert.deepEqual(results,tab);
-				
-				done();
-			    });
+			    assert.equal(err,null);
+			    assert.deepEqual(results,tab);
+			    
+			    done();
 			});
 		    });
 		});
 	    });
 	});
+    });
 
-	it('should not remove a song in a list of song', function(done){
-  
-	    song2 = createSongJSON(2);
-	    song3 = createSongJSON(3);
+    it('should not remove a song in a list of song', function(done){
+	
+	song2 = createSongJSON(2);
+	song3 = createSongJSON(3);
 
-	    song.postSong(song1,function(err,results) {
+	song.postSong(song1,function(err,results) {
+	    assert.equal(err,null);
+
+
+	    song.postSong(song2,function(err,results) {
 		assert.equal(err,null);
 
 
-		song.postSong(song2,function(err,results) {
+		song.postSong(song3,function(err,results) {
 		    assert.equal(err,null);
 
+		    song.removeSong(4, function(err, results) {
 
-		    song.postSong(song3,function(err,results) {
-			assert.equal(err,null);
+			tab = [];
+			tab.push(song1);
+			tab.push(song2);
+			tab.push(song3);
 
-			song.removeSong(4, function(err, results) {
-//			    assert.equal(results,null);
-
-
-			    tab = [];
-			    tab.push(song1);
-			    tab.push(song2);
-			    tab.push(song3);
-
-			    song.getSong(function(err,results){
-				assert.equal(err,null);
-				assert.deepEqual(results,tab);
-				done();
-			    });
-			});			
-		    });		
-		});			   
-	    });
-
-
+			song.getSong(function(err,results){
+			    assert.equal(err,null);
+			    assert.deepEqual(results,tab);
+			    done();
+			});
+		    });			
+		});		
+	    });			   
 	});
 
+
+    });
+    
+
+    it('should remove all song in the db', function(done){
+
+	song2 = createSongJSON(2);
+	song3 = createSongJSON(3);
 	
+	song.postSong(song1,function(err,results) {
+	    assert.equal(err,null);
 
-	it('should remove all song in the db', function(done){
-
-	    song2 = createSongJSON(2);
-	    song3 = createSongJSON(3);
-	    
-	    song.postSong(song1,function(err,results) {
+	    song.postSong(song2,function(err,results) {
 		assert.equal(err,null);
 
-		song.postSong(song2,function(err,results) {
-		    assert.equal(err,null);
-
-		    song.removeAllSongs(function(){});
+		song.removeAllSongs(function(){
 
 		    song.getSong(function(err,results){
 			assert.equal(err,null);
@@ -191,8 +188,9 @@ describe('songDB', function() {
 			done();
 		    });
 		});
-	    });	    
-	});
+	    });
+	});	    
     });
 });
+
 
