@@ -8,27 +8,27 @@
     "track": [
       {
         "name": "basse",
-        "path": "basse.mp3"
+        "path": "track/queen_champions/sound/basse.mp3"
       },
       {
         "name": "batterie",
-        "path": "batterie.mp3"
+        "path": "track/queen_champions/sound/batterie.mp3"
       },
       {
         "name": "guitare",
-        "path": "guitare.mp3"
+        "path": "track/queen_champions/sound/guitare.mp3"
       },
       {
         "name": "guitare2",
-        "path": "guitare2.mp3"
+        "path": "track/queen_champions/sound/guitare2.mp3"
       },
       {
         "name": "piano",
-        "path": "piano.mp3"
+        "path": "track/queen_champions/sound/piano.mp3"
       },
       {
         "name": "voix",
-        "path": "voix.mp3"
+        "path": "track/queen_champions/sound/voix.mp3"
       }
     ]
   },
@@ -41,23 +41,23 @@
     "track": [
       {
         "name": "basse",
-        "path": "basse.mp3"
+        "path": "track/jamesbrown_get/sound/basse.mp3"
       },
       {
         "name": "batterie",
-        "path": "batterie.mp3"
+        "path": "track/jamesbrown_get/sound/batterie.mp3"
       },
       {
         "name": "extra",
-        "path": "extra.mp3"
+        "path": "track/jamesbrown_get/sound/extra.mp3"
       },
       {
         "name": "guitare",
-        "path": "guitare.mp3"
+        "path": "track/jamesbrown_get/sound/guitare.mp3"
       },
       {
         "name": "voix",
-        "path": "voix.mp3"
+        "path": "track/jamesbrown_get/sound/voix.mp3"
       }
     ]
   },
@@ -70,19 +70,19 @@
     "track": [
       {
         "name": "basse",
-        "path": "basse.mp3"
+        "path": "track/deep_smoke/sound/basse.mp3"
       },
       {
         "name": "batterie",
-        "path": "batterie.mp3"
+        "path": "track/deep_smoke/sound/batterie.mp3"
       },
       {
         "name": "guitare",
-        "path": "guitare.mp3"
+        "path": "track/deep_smoke/sound/guitare.mp3"
       },
       {
         "name": "voix",
-        "path": "voix.mp3"
+        "path": "track/deep_smoke/sound/voix.mp3"
       }
     ]
   },
@@ -95,67 +95,67 @@
     "track": [
       {
         "name": "basse",
-        "path": "basse.mp3"
+        "path": "track/bob_love/sound/basse.mp3"
       },
       {
         "name": "choeurs1",
-        "path": "choeurs1.mp3"
+        "path": "track/bob_love/sound/choeurs1.mp3"
       },
       {
         "name": "choeurs2",
-        "path": "choeurs2.mp3"
+        "path": "track/bob_love/sound/choeurs2.mp3"
       },
       {
         "name": "extra",
-        "path": "extra.mp3"
+        "path": "track/bob_love/sound/extra.mp3"
       },
       {
         "name": "batterie",
-        "path": "batterie.mp3"
+        "path": "track/bob_love/sound/batterie.mp3"
       },
       {
         "name": "guitare1",
-        "path": "guitare1.mp3"
+        "path": "track/bob_love/sound/guitare1.mp3"
       },
       {
         "name": "guitare2",
-        "path": "guitare2.mp3"
+        "path": "track/bob_love/sound/guitare2.mp3"
       },
       {
         "name": "guitare3",
-        "path": "guitare3.mp3"
+        "path": "track/bob_love/sound/guitare3.mp3"
       },
       {
         "name": "oooh",
-        "path": "oooh.mp3"
+        "path": "track/bob_love/sound/oooh.mp3"
       },
       {
         "name": "orgue",
-        "path": "orgue.mp3"
+        "path": "track/bob_love/sound/orgue.mp3"
       },
       {
         "name": "piano",
-        "path": "piano.mp3"
+        "path": "track/bob_love/sound/piano.mp3"
       },
       {
         "name": "rythme",
-        "path": "rythme.mp3"
+        "path": "track/bob_love/sound/rythme.mp3"
       },
       {
         "name": "saxo",
-        "path": "saxo.mp3"
+        "path": "track/bob_love/sound/saxo.mp3"
       },
       {
         "name": "trombone",
-        "path": "trombone.mp3"
+        "path": "track/bob_love/sound/trombone.mp3"
       },
       {
         "name": "trompette",
-        "path": "trompette.mp3"
+        "path": "track/bob_love/sound/trompette.mp3"
       },
       {
         "name": "voix",
-        "path": "voix.mp3"
+        "path": "track/bob_love/sound/voix.mp3"
       }
     ]
   },
@@ -168,31 +168,31 @@
     "track": [
       {
         "name": "basse",
-        "path": "basse.mp3"
+        "path": "track/amy_rehab/sound/basse.mp3"
       },
       {
         "name": "batterie",
-        "path": "batterie.mp3"
+        "path": "track/amy_rehab/sound/batterie.mp3"
       },
       {
         "name": "cuivre",
-        "path": "cuivre.mp3"
+        "path": "track/amy_rehab/sound/cuivre.mp3"
       },
       {
         "name": "guitare",
-        "path": "guitare.mp3"
+        "path": "track/amy_rehab/sound/guitare.mp3"
       },
       {
         "name": "orgue",
-        "path": "orgue.mp3"
+        "path": "track/amy_rehab/sound/orgue.mp3"
       },
       {
         "name": "piano",
-        "path": "piano.mp3"
+        "path": "track/amy_rehab/sound/piano.mp3"
       },
       {
         "name": "voix",
-        "path": "voix.mp3"
+        "path": "track/amy_rehab/sound/voix.mp3"
       }
     ]
   }
