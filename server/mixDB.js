@@ -15,7 +15,7 @@ module.exports = {
      * name is the name of the new database
      **/
     setDB: function(name){
-	url = 'mongodb://localhost:27017/'+name;
+        mongo.setDB(name);
     },
 
     //give the mix collection name
