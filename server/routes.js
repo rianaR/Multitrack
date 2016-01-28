@@ -51,8 +51,8 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 
 // routing song
-router.get('/song',function(req,res) {
-    song.getSong(function(err, results){
+router.get('/songs',function(req,res) {
+    song.getSongs(function(err, results){
         res.header('Content-Type', "application/json");
         if (err) {
             res.statusCode = 400;
@@ -69,8 +69,8 @@ router.post('/song',function(req,res) {
     song.postSong(req.body, function(err, result) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.statusCode = 400;
-            res.send(JSON.stringify(err));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
