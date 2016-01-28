@@ -20,9 +20,10 @@ var InputValidator = {
                     "required": true,
                     "items": {
                         "properties" :{
-                            "name" : { "type" : "string" },
-                            "path" : { "type" : "string" }
-                        }
+                            "name" : { "type" : "string", "required" : true},
+                            "path" : { "type" : "string", "required": true }
+                        },
+                        "additionalProperties": false
                     }
                 }
             }

@@ -80,6 +80,133 @@ describe('function test', function () {
         });
     });
 
+    it('trying to add an invalid song : invalid artist', function (done) {
+        song1.artist = 40;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : artist is missing', function (done) {
+        delete song1.artist;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : invalid title', function (done) {
+        song1.song = 1;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : invalid year', function (done) {
+        song1.released = "1970";
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : invalid path', function (done) {
+        song1.path = 1;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : invalid name attribute in track', function (done) {
+        song1.track[0].name = 30;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : invalid path attribute in track', function (done) {
+        song1.track[0].path = 30;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : forbidden attribute in track', function (done) {
+        song1.track[0].invalid = "invalid";
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+    it('trying to add an invalid song : attribute missing in track', function (done) {
+        delete song1.track[0].name;
+        song.postSong(song1, function (err) {
+            assert.notEqual(err, null);
+            assert.equal(err.statusCode, 400);
+            assert.notEqual(err.errorMessage, null);
+            song.getSongs(function (err, results) {
+                assert.equal(err, null);
+                assert.deepEqual(results, []);
+                done();
+            });
+        });
+    });
+
+
     it('should remove a song', function (done) {
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
@@ -100,8 +227,8 @@ describe('function test', function () {
 
     it('should remove a song in a list of song', function (done) {
 
-        song2 = createSongJSON(2);
-        song3 = createSongJSON(3);
+        var song2 = createSongJSON(2);
+        var song3 = createSongJSON(3);
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
@@ -134,8 +261,8 @@ describe('function test', function () {
 
     it('should not remove a song in a list of song', function (done) {
 
-        song2 = createSongJSON(2);
-        song3 = createSongJSON(3);
+        var song2 = createSongJSON(2);
+        var song3 = createSongJSON(3);
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
@@ -171,8 +298,8 @@ describe('function test', function () {
 
     it('should remove all song in the db', function (done) {
 
-        song2 = createSongJSON(2);
-        song3 = createSongJSON(3);
+        var song2 = createSongJSON(2);
+        var song3 = createSongJSON(3);
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
