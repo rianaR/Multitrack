@@ -14,8 +14,10 @@ describe("mix test",function(){
 
     it('should not have mix',function(done) {
 	mix.removeAllMix(function(){
-	    assert.deepEqual
-	    done();
+	    mix.getAllMix(function(err, results){
+		assert.deepEqual(results,[]);
+		done();
+	    });
 	});
     });
 
