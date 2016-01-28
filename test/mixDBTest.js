@@ -7,13 +7,13 @@ describe("mix test",function(){
 
        
     beforeEach(function(done){
-	mix.removeAllMix(function(){
+	mix.removeAllMixes(function(){
 	    done();
 	});
     });
 
     it('should not have mix',function(done) {
-	mix.removeAllMix(function(){
+	mix.removeAllMixes(function(){
 	    assert.deepEqual
 	    done();
 	});
@@ -44,7 +44,7 @@ describe("mix test",function(){
 	    
 	    mix.postMix(mix2,function(err,results){
 	    
-		mix.getAllMix(function(err,results){
+		mix.getAllMixes(function(err, results){
 		    assert.equal(err,null);
 		    tab = [];
 		    tab.push(mix1);
@@ -69,7 +69,7 @@ describe("mix test",function(){
 		
 		mix.removeMix(1,function(err,results){
 
-		    mix.getAllMix(function(err,results){
+		    mix.getAllMixes(function(err, results){
 			assert.equal(err,null);
 			tab = [];
 			tab.push(mix2);
