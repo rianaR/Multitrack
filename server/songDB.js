@@ -22,7 +22,7 @@ module.exports = {
      *
      * callback must be called at the end of the method
      **/
-    getSong: function (callback) {
+    getSongs: function (callback) {
         mongo.findDocuments(songCollection, function(err, results) {
             callback(err, results);
         });
@@ -37,12 +37,18 @@ module.exports = {
     postSong: function(song, callback) {
         var songValidation = inputValidator.validateSong(song);
         if (!songValidation.valid) {
-            callback(songValidation.errorMessage);
+            callback({
+                statusCode : 400,
+                errorMessage : songValidation.errorMessages
+            });
         }
         else {
             mongo.insertDocument(song, songCollection, function (err, result) {
                 if (err) {
-                    callback(err);
+                    callback({
+                        statusCode : 500,
+                        errorMessage : err
+                    });
                 }
                 else {
                     callback(null, result);

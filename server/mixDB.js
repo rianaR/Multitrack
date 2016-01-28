@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 var mongo = require('./manageMongo');
+var songDB = require('./songDB');
 
 var mixCollection = "mix";
 
@@ -30,12 +31,30 @@ module.exports = {
      * songId is the id of the song which match with the mix
      * callback must be called at the end of the method
      **/
-    getMixBySong: function (songId,callback) {
-	    var filter = {}
-	    filter.songId = Number(songId);
-	    mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
-            callback(err, results);
-	    });
+    getMixBySong: function (songId, callback) {
+        if (isNaN(Number(songId))) {
+            callback(
+                {
+                    statusCode : 400,
+                    errorMessage : "Invalid request : songId is invalid"
+                }
+            );
+        }
+        else {
+            var filter = { "song._id" : Number(songId) };
+            mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
+                if (err) {
+                    callback({
+                        statusCode : 500,
+                        errorMessage : err
+                    });
+                }
+                else {
+                    callback(null, results);
+
+                }
+            });
+        }
     },
 
     /**
@@ -44,10 +63,42 @@ module.exports = {
      * res is the response 
      * callback must be called at the end of the method
      **/
-    getAllMix: function (callback) {
+    getAllMixes: function (callback) {
 	    mongo.findDocuments(mixCollection, function(err, results) {
-            callback(err, results);
+            if (err) {
+                callback({
+                    errorMessage : err
+                });
+            }
+            else {
+                callback(null, results);
+
+            }
 	    });
+    },
+
+    getMixByID: function (mixId, callback) {
+        if (isNaN(Number(mixId))) {
+            callback(
+                {
+                    statusCode : 400,
+                    errorMessage : "Invalid request : mixID is invalid"
+                }
+            );
+        }
+        else {
+            var filter = { "_id" : Number(mixId) };
+            mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
+                if (err) {
+                    callback({
+                        errorMessage : err
+                    });
+                }
+                else {
+                    callback(null, results[0]);
+                }
+            });
+        }
     },
     
     /**
@@ -56,9 +107,44 @@ module.exports = {
      * mix is the resource added in the database
      **/
     postMix: function(mix, callback) {
-	    mongo.insertDocument(mix, mixCollection, function(err, results) {
-			callback(err, results);
-	    });
+        mongo.findDocumentsByFilter({_id : mix["song_id"]}, songDB.getSongDB(), function(err, results) {
+            if (err) {
+                callback({
+                    statusCode : 500,
+                    errorMessage : err
+                });
+            }
+            else {
+                delete mix.song_id;
+                mix.song = results[0];
+                mix.comments = [];
+                mongo.insertDocument(mix, mixCollection, function(err, results) {
+                    if (err) {
+                        callback({
+                            statusCode : 500,
+                            errorMessage : err
+                        });
+                    }
+                    else {
+                        callback(null, results);
+                    }
+                });
+            }
+
+        });
+    },
+
+    updateMix: function(updatedMix, callback) {
+        this.getMixByID({"_id" : updatedMix._id}, function(err, mixToUpdate) {
+            if (err) {
+                callback(err);
+            }
+            else {
+                mixToUpdate.effects = updatedMix.effects;
+                mixToUpdate.name = updatedMix.name;
+                this.postMix(mixToUpdate, callback);
+            }
+        });
     },
 
     /**
@@ -68,18 +154,45 @@ module.exports = {
      **/
     removeMix: function(mixId, callback) {
 	    var filter= {};
-	    filter._id = Number(mixId);
-	    mongo.removeDocument(filter,mixCollection, function(err, deleted) {
-			callback(err, deleted);
-	    });
+        if (isNaN(Number(mixId))) {
+            callback(
+                {
+                    statusCode : 400,
+                    errorMessage : "Invalid request : songId is invalid"
+                }
+            );
+        }
+        else {
+            filter._id = Number(mixId);
+            mongo.removeDocument(filter,mixCollection, function(err, deleted) {
+                if (err) {
+                    callback({
+                        statusCode : 500,
+                        errorMessage : err
+                    });
+                }
+                else {
+                    callback(null, deleted);
+                }
+            });
+        }
+
     },
 
     /**
      * Remove all the mix from the database
      **/
-    removeAllMix: function(callback) {
+    removeAllMixes: function(callback) {
 	    mongo.removeAllDocuments(mixCollection, function(err, deleted) {
-			callback(err, deleted);
+            if (err) {
+                callback({
+                    statusCode : 500,
+                    errorMessage : err
+                });
+            }
+            else {
+                callback(null, deleted);
+            }
 	    });
     }
     

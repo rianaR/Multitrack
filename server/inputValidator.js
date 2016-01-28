@@ -6,42 +6,48 @@ var ERROR_BAD_ID = 1;
 
 var InputValidator = {
     validateSong: function (song) {
+        //Description d'un document song
         var songSchema = {
             "id" : "/Song",
             "type" : "Object",
             "properties" : {
-                "artist" : { "type" : "string" },
-                "song" : { "type" : "string" },
-                "released" : { "type" : "integer", "minimum" : 1  },
-                "path" : { "type" : "string" },
+                "artist" : { "type" : "string", "required": true },
+                "song" : { "type" : "string", "required": true },
+                "released" : { "type" : "integer", "required": true },
+                "path" : { "type" : "string", "required": true },
                 "track" : {
                     "type": "array",
+                    "required": true,
                     "items": {
                         "properties" :{
-                            "name" : { "type" : "string" },
-                            "path" : { "type" : "string" }
-                        }
+                            "name" : { "type" : "string", "required" : true},
+                            "path" : { "type" : "string", "required": true }
+                        },
+                        "additionalProperties": false
                     }
                 }
             }
         };
-        var result = {
-            valid : true
-        };
-        /*
-        var validator = new Validator();
-        result.errorMessage = validator.validate(song, songSchema);
 
-        if (validator.validate(song, songSchema)) {
+        //Données renvoyées dans le return
+        var result = {
+            valid : false,
+            errorMessages : []
+        };
+
+        //Validation
+        var validator = new Validator();
+        var validatorResult = validator.validate(song, songSchema);
+        //Tableau errors vide = pas d'erreurs de validation
+        if (validatorResult.errors.length == 0) {
             result.valid = true;
-            result.errorMessage = "Song is OK"
         }
         else {
             result.valid = false;
-            result.errorMessage = "Problem with song"
-
+            validatorResult.errors.forEach(function(error, index) {
+                result.errorMessages.push(error.stack);
+            });
         }
-        */
 
         return result;
     }

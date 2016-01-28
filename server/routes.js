@@ -51,11 +51,11 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 
 // routing song
-router.get('/song',function(req,res) {
-    song.getSong(function(err, results){
+router.get('/songs',function(req,res) {
+    song.getSongs(function(err, results){
         res.header('Content-Type', "application/json");
         if (err) {
-            res.statusCode = 400;
+            res.statusCode = 500;
             res.send(JSON.stringify(err));
         }
         else {
@@ -69,8 +69,8 @@ router.post('/song',function(req,res) {
     song.postSong(req.body, function(err, result) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.statusCode = 400;
-            res.send(JSON.stringify(err));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
@@ -109,10 +109,11 @@ router.delete('/song/:id', function(req,res) {
 
 // routing mix
 router.get('/mix',function(req,res) {
-    mix.getAllMix(function(err, results) {
+    mix.getAllMixes(function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.send(JSON.stringify({error : 1}));
+            res.statusCode = 500;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
@@ -125,7 +126,8 @@ router.get('/mix/:songId',function(req,res) {
     mix.getMixBySong(req.params.songId,function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.send(JSON.stringify({error : 1}));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
@@ -138,7 +140,8 @@ router.post('/mix',function(req,res) {
     mix.postMix(req.body, function(err, results) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.send(JSON.stringify({error : 1}));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
@@ -150,10 +153,11 @@ router.post('/mix',function(req,res) {
 
 
 router.delete('/allMix', function(req,res) {
-    mix.removeAllMix(req.params.id, function(err, deleted) {
+    mix.removeAllMixes(req.params.id, function(err, deleted) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.send(JSON.stringify({error : 1}));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
@@ -166,7 +170,8 @@ router.delete('/mix/:id', function(req,res) {
     mix.removeMix(req.params.id, function(err, deleted) {
         res.header('Content-Type', "application/json");
         if (err) {
-            res.send(JSON.stringify({error : 1}));
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
         }
         else {
             res.statusCode = 200;
