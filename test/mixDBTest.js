@@ -1,6 +1,7 @@
 var assert = require('assert');
 var mix = require('../server/mixDB');
 var songDB = require('../server/songDB');
+var ObjectID = require('mongodb').ObjectID;
 
 mix.setDB('test');
 songDB.setDB('test');
@@ -50,8 +51,8 @@ describe("mix test", function () {
 
 
     it('should not have mix',function(done) {
-	mix.removeAllMix(function(){
-	    mix.getAllMix(function(err, results){
+	mix.removeAllMixes(function(){
+	    mix.getAllMixes(function(err, results){
 		assert.deepEqual(results,[]);
 		done();
 	    });
