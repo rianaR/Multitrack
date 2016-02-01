@@ -1,5 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
+var ObjectID = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/prod';
 var assert = require('assert');
 
@@ -85,8 +85,7 @@ module.exports = {
     /**
      *   find a document into the database
      *
-     *   db is the mongodb client
-     *   res is res where method wil write the result
+	 *
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
@@ -118,12 +117,11 @@ module.exports = {
     /**
      *   remove a document from the database
      *
-     *   db is the mongodb client
      *   id is the id of the document to remove
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
-    removeDocument: function(filter, collection, callback) {
+    removeDocument: function(id, collection, callback) {
 		MongoClient.connect(url, function(err, db) {
 			if (err) {
 				db.close();
@@ -131,8 +129,9 @@ module.exports = {
 			}
 			else {
 				console.log("Connected correctly to server.");
+				var object_id = new ObjectID(id);
 				db.collection(collection).deleteMany(
-					filter,
+					{"_id" : object_id },
 					function(err, deleted) {
 						if (err) {
 							console.log("Error on deleting document");

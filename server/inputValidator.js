@@ -50,6 +50,63 @@ var InputValidator = {
         }
 
         return result;
+    },
+    validateMix : function(mix) {
+        var mixSchema = {
+            "id" : "/Mix",
+            "type" : "Object",
+            "properties" : {
+                "name" : { "type" : "string", "required": true },
+                "user_id" : {"type" : "integer" },
+                "song_id" : { "type" : "string", "required": true },
+                "masterEffects" : {
+                    "type": "array",
+                    "required": true,
+                    "items": {
+                        "properties" :{
+                            "name": { "type" : "string", "required" : true },
+                            "value": { "type" : "integer", "required" : true }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "trackEffects" : {
+                    "type": "array",
+                    "required": true,
+                    "items": {
+                        "properties" :{
+                            "track" : { "type" : "string", "required" : true },
+                            "name": { "type" : "string", "required" : true },
+                            "value": { "type" : "integer", "required" : true }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "additionalProperties": false
+        };
+
+        //Données renvoyées dans le return
+        var result = {
+            valid : false,
+            errorMessages : []
+        };
+
+        //Validation
+        var validator = new Validator();
+        var validatorResult = validator.validate(song, songSchema);
+        //Tableau errors vide = pas d'erreurs de validation
+        if (validatorResult.errors.length == 0) {
+            result.valid = true;
+        }
+        else {
+            result.valid = false;
+            validatorResult.errors.forEach(function(error, index) {
+                result.errorMessages.push(error.stack);
+            });
+        }
+
+        return result;
     }
 };
 

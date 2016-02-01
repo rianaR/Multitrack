@@ -1,5 +1,6 @@
 var assert = require('assert');
 var song = require('../server/songDB');
+var ObjectID = require('mongodb').ObjectID;
 
 song.setDB('test');
 
@@ -7,7 +8,7 @@ song1 = {};
 
 function createSongJSON(id) {
     return {
-        "_id": id,
+        "_id": new ObjectID(id),
         "artist": "Queen",
         "song": "We Are The Champions",
         "released": 1977,
@@ -47,7 +48,7 @@ describe('function test', function () {
 
     beforeEach(function (done) {
         song.removeAllSongs(function () {
-            song1 = createSongJSON(1);
+            song1 = createSongJSON("56af72de2e23372e947501d6");
             done();
         });
     });
@@ -211,7 +212,7 @@ describe('function test', function () {
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
 
-            song.removeSong(1, function (err, results) {
+            song.removeSong("56af72de2e23372e947501d6", function (err, result) {
                 assert.equal(err, null);
 
                 song.getSongs(function (err, results) {
@@ -227,8 +228,8 @@ describe('function test', function () {
 
     it('should remove a song in a list of song', function (done) {
 
-        var song2 = createSongJSON(2);
-        var song3 = createSongJSON(3);
+        var song2 = createSongJSON("56af72de2e23372e947501d7");
+        var song3 = createSongJSON("56af72de2e23372e947501d8");
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
@@ -239,7 +240,7 @@ describe('function test', function () {
                 song.postSong(song3, function (err, results) {
                     assert.equal(err, null);
 
-                    song.removeSong(2, function (err, results) {
+                    song.removeSong("56af72de2e23372e947501d7", function (err, results) {
                         assert.equal(err, null);
 
                         tab = [];
@@ -261,8 +262,8 @@ describe('function test', function () {
 
     it('should not remove a song in a list of song', function (done) {
 
-        var song2 = createSongJSON(2);
-        var song3 = createSongJSON(3);
+        var song2 = createSongJSON("56af72de2e23372e947501d7");
+        var song3 = createSongJSON("56af72de2e23372e947501d8");
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);
@@ -275,7 +276,7 @@ describe('function test', function () {
                 song.postSong(song3, function (err, results) {
                     assert.equal(err, null);
 
-                    song.removeSong(4, function (err, results) {
+                    song.removeSong("56af72de2e23372e947501f5", function (err, results) {
 
                         tab = [];
                         tab.push(song1);
@@ -298,8 +299,8 @@ describe('function test', function () {
 
     it('should remove all song in the db', function (done) {
 
-        var song2 = createSongJSON(2);
-        var song3 = createSongJSON(3);
+        var song2 = createSongJSON("56af72de2e23372e947501d7");
+        var song3 = createSongJSON("56af72de2e23372e947501d8");
 
         song.postSong(song1, function (err, results) {
             assert.equal(err, null);

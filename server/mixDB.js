@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 var mongo = require('./manageMongo');
+var ObjectID = require('mongodb').ObjectId;
 var songDB = require('./songDB');
 
 var mixCollection = "mix";
@@ -32,7 +33,8 @@ module.exports = {
      * callback must be called at the end of the method
      **/
     getMixBySong: function (songId, callback) {
-        if (isNaN(Number(songId))) {
+
+        if (!(ObjectID.isValid(songId))) {
             callback(
                 {
                     statusCode : 400,
@@ -41,7 +43,8 @@ module.exports = {
             );
         }
         else {
-            var filter = { "song._id" : Number(songId) };
+            var object_id = new ObjectID(songId);
+            var filter = { "song._id" :  object_id};
             mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
                 if (err) {
                     callback({
@@ -87,7 +90,7 @@ module.exports = {
             );
         }
         else {
-            var filter = { "_id" : Number(mixId) };
+            var filter = { "_id" : new ObjectID(mixId) };
             mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
                 if (err) {
                     callback({
@@ -107,14 +110,18 @@ module.exports = {
      * mix is the resource added in the database
      **/
     postMix: function(mix, callback) {
-        mongo.findDocumentsByFilter({_id : mix["song_id"]}, songDB.getSongDB(), function(err, results) {
+        //TODO : Vérifier que la requête d'ajout de mix est valide
+        var mixID = new ObjectID(mix.song_id);
+        mongo.findDocumentsByFilter({ "_id" : mixID }, songDB.getSongDB(), function(err, results) {
             if (err) {
+                //Le mix n'est asoscié à aucune chanson
                 callback({
                     statusCode : 500,
                     errorMessage : err
                 });
             }
             else {
+                //On remplace l'id de chanson par la chanson entière
                 delete mix.song_id;
                 mix.song = results[0];
                 mix.comments = [];
@@ -135,7 +142,7 @@ module.exports = {
     },
 
     updateMix: function(updatedMix, callback) {
-        this.getMixByID({"_id" : updatedMix._id}, function(err, mixToUpdate) {
+        this.getMixByID(updatedMix._id, function(err, mixToUpdate) {
             if (err) {
                 callback(err);
             }
@@ -153,18 +160,16 @@ module.exports = {
      * mixId is the id of the mix that will be removed
      **/
     removeMix: function(mixId, callback) {
-	    var filter= {};
-        if (isNaN(Number(mixId))) {
+        if (!(ObjectID.isValid(mixId))) {
             callback(
                 {
                     statusCode : 400,
-                    errorMessage : "Invalid request : songId is invalid"
+                    errorMessage : "Invalid request : mix id is invalid"
                 }
             );
         }
         else {
-            filter._id = Number(mixId);
-            mongo.removeDocument(filter,mixCollection, function(err, deleted) {
+            mongo.removeDocument(mixId, mixCollection, function(err, deleted) {
                 if (err) {
                     callback({
                         statusCode : 500,

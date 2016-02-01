@@ -7,7 +7,7 @@ mix.setDB('test');
 songDB.setDB('test');
 
 var song1 = {
-    "_id": 1,
+    "_id": new ObjectID("56af742e4ec4a781cef3d568"),
     "artist": "Queen",
     "song": "We Are The Champions",
     "released": 1977,
@@ -63,10 +63,10 @@ describe("mix test", function () {
         songDB.postSong(song1, function(err) {
             assert.equal(err,null);
             mix1 = {
-                "_id": 5,
+                "_id": new ObjectID("56af746c0f9c57894d37c859"),
                 "name": "mix1",
                 "user_id": 45,
-                "song_id": 1,
+                "song_id": new ObjectID("56af742e4ec4a781cef3d568"),
                 "effects": [
                     {
                         "track": "guitare",
@@ -82,9 +82,9 @@ describe("mix test", function () {
             };
             mix.postMix(mix1, function (err, results) {
                 assert.equal(err, null);
-                mix.getMixBySong(1, function (err, results) {
+                mix.getMixBySong("56af742e4ec4a781cef3d568", function (err, results) {
                     assert.equal(err, null);
-                    assert.equal(results[0]._id, mix1._id);
+                    assert.equal(results[0]._id.toHexString(), mix1._id.toHexString());
                     done();
                 });
             });
@@ -93,8 +93,44 @@ describe("mix test", function () {
 
     it('should get all mix', function (done) {
 
-        mix1 = {_id: 1};
-        mix2 = {_id: 2};
+        mix1 = {
+            "_id" : "56af754df0500975b6dfc63c",
+            "name": "mix1",
+            "user_id": 45,
+            "song_id": "56af72df2e23372e947501d8",
+            "masterVolume" : 0.7,
+            "trackEffects" : [
+                {
+                    "track": "guitare",
+                    "volume" : 0.8,
+                    "mute" : 1
+                },
+                {
+                    "track": "batterie",
+                    "volume": 0.3,
+                    "mute": 1
+                }
+            ]
+        };
+        mix2 = {
+            "_id" : "56af754df0500975b6dfc64d",
+            "name": "mix2",
+            "user_id": 45,
+            "song_id": "56af72df2e23372e947501d8",
+            "masterVolume" : 0.7,
+            "trackEffects" : [
+                {
+                    "track": "guitare",
+                    "volume" : 0.8,
+                    "mute" : 1
+                },
+                {
+                    "track": "batterie",
+                    "volume": 0.3,
+                    "mute": 1
+                }
+            ]
+        };
 
         mix.postMix(mix1, function (err, results) {
             assert.equal(err, null);
@@ -103,10 +139,8 @@ describe("mix test", function () {
 
                 mix.getAllMixes(function (err, results) {
                     assert.equal(err, null);
-                    tab = [];
-                    tab.push(mix1);
-                    tab.push(mix2);
-                    assert.deepEqual(results, tab);
+                    assert.equal(results[0]._id, mix1._id);
+                    assert.equal(results[1]._id, mix2._id);
                     done();
                 });
             });
@@ -115,8 +149,44 @@ describe("mix test", function () {
 
     it('should remove a mix', function (done) {
 
-        mix1 = {_id: 1};
-        mix2 = {_id: 2};
+        mix1 = {
+            "_id" : new ObjectID("56af754df0500975b6dfc63c"),
+            "name": "mix1",
+            "user_id": 45,
+            "song_id": "56af72df2e23372e947501d8",
+            "masterVolume" : 0.7,
+            "trackEffects" : [
+                {
+                    "track": "guitare",
+                    "volume" : 0.8,
+                    "mute" : 1
+                },
+                {
+                    "track": "batterie",
+                    "volume": 0.3,
+                    "mute": 1
+                }
+            ]
+        };
+        mix2 = {
+            "_id" : new ObjectID("56af754df0500975b6dfc64d"),
+            "name": "mix2",
+            "user_id": 45,
+            "song_id": "56af72df2e23372e947501d8",
+            "masterVolume" : 0.7,
+            "trackEffects" : [
+                {
+                    "track": "guitare",
+                    "volume" : 0.8,
+                    "mute" : 1
+                },
+                {
+                    "track": "batterie",
+                    "volume": 0.3,
+                    "mute": 1
+                }
+            ]
+        };
 
         mix.postMix(mix1, function (err, results) {
             assert.equal(err, null);
@@ -124,13 +194,13 @@ describe("mix test", function () {
             mix.postMix(mix2, function (err, results) {
                 assert.equal(err, null);
 
-                mix.removeMix(1, function (err, results) {
-
+                mix.removeMix("56af754df0500975b6dfc63c", function (err, res) {
+                    assert.equal(err, null);
+                    assert.equal(res.result.ok, 1);
                     mix.getAllMixes(function (err, results) {
                         assert.equal(err, null);
-                        tab = [];
-                        tab.push(mix2);
-                        assert.deepEqual(results, tab);
+                        assert.equal(results.length, 1);
+                        assert.equal(results[0]._id.toHexString(), mix2._id.toHexString());
                         done();
                     });
                 });

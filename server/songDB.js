@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 
 var mongo = require('./manageMongo');
+var ObjectID = require('mongodb').ObjectID;
 var inputValidator = require('./inputValidator');
 
 var songCollection = "song";
@@ -63,9 +64,15 @@ module.exports = {
      * songId is the id of the song that will be removed
      **/
     removeSong: function(songId, callback) {
-        var filter= {};
-        filter._id = Number(songId);
-        mongo.removeDocument(filter,songCollection, function(err, results) {
+        if (!(ObjectID.isValid(songId))) {
+            callback(
+                {
+                    statusCode : 400,
+                    errorMessage : "Invalid request : song id is invalid"
+                }
+            );
+        }
+        mongo.removeDocument(songId,songCollection, function(err, results) {
             callback(err, results);
         });
     },
