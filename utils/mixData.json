@@ -28,7 +28,13 @@
         }
       ]
     },
-    "effects": [
+    "masterEffects": [
+      {
+        "name": "volume",
+        "value": 0.8
+      }
+    ],
+    "trackEffects": [
       {
         "track": "guitare",
         "name": "volume",
@@ -86,7 +92,13 @@
         }
       ]
     },
-    "effects": [
+    "masterEffects": [
+      {
+        "name": "volume",
+        "value": 0.7
+      }
+    ],
+    "trackEffects": [
       {
         "track": "guitare",
         "name": "volume",

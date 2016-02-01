@@ -3,7 +3,13 @@
   "name": "mix2",
   "user_id": 45,
   "song_id": 3,
-  "effects": [
+  "masterEffects": [
+    {
+      "name": "volume",
+      "value": 0.8
+    }
+  ],
+  "trackEffects": [
     {
       "track": "guitare",
       "name": "volume",
