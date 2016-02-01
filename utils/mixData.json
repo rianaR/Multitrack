@@ -3,7 +3,7 @@
     "name": "mix1",
     "user_id": 45,
     "song": {
-      "_id": 3,
+      "_id": "56af72df2e23372e947501d8",
       "artist": "Deep Purple",
       "song": "Smoke On The Water",
       "released": 1972,
@@ -32,12 +32,12 @@
       {
         "track": "guitare",
         "volume" : 0.8,
-        "mute" : 1
+        "mute" : true
       },
       {
         "track": "batterie",
         "volume": 0.3,
-        "mute": 1
+        "mute": true
       }
     ],
     "comments": [
@@ -58,11 +58,10 @@
     ]
   },
   {
-    "_id": 2,
     "name": "mix2",
     "user_id": 45,
     "song": {
-      "_id": 3,
+      "_id": "56af72df2e23372e947501d8",
       "artist": "Deep Purple",
       "song": "Smoke On The Water",
       "released": 1972,
@@ -91,12 +90,12 @@
       {
         "track": "guitare",
         "volume" : 0.8,
-        "mute" : 1
+        "mute" : true
       },
       {
         "track": "batterie",
         "volume": 0.3,
-        "mute": 1
+        "mute": true
       }
     ],
     "comments": [

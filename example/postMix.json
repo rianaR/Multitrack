@@ -1,19 +1,18 @@
 {
-  "_id": 5,
   "name": "mix2",
   "user_id": 45,
-  "song_id": 3,
+  "song_id": "56af72df2e23372e947501d8",
   "masterVolume" : 0.7,
   "trackEffects" : [
     {
       "track": "guitare",
       "volume" : 0.8,
-      "mute" : 1
+      "mute" : true
     },
     {
       "track": "batterie",
       "volume": 0.3,
-      "mute": 1
+      "mute": true
     }
   ]
 }
