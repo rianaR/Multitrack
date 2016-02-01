@@ -37,15 +37,16 @@ module.exports = {
      * userId is the _id of the user
      **/
     getUser: function(userId,callback){
-	var filter = {}
-	filter.userId = Number(userId);
+
+	var filter = { _id : userId };
 	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
-            callback(err, results);
+	    callback(err, results);	    
 	});
+	
     },
 
     /**
-     * Add or update an user
+     * Add or update an user (not recommended, you should use addUser)
      *
      * user is the jsObject which contains all information about user : _id, name and mixis id
      *
@@ -60,13 +61,20 @@ module.exports = {
      * Add an user with his name and right
      *
      * name is the user name
+     * pwd is the password
+
      * right is user rights (admin or normal)
      **/
-    addUser: function(name,right,callback){
+    addUser: function(name,pwd,right,callback){
 	var user = {}
 	user.name = name;
+	user.pwd = pwd;
 	user.right = right;
-	user.mixis = [];
+	user.mixes = [];
+	user.comments = [];
+	user.connection = null;
+	user.timeStamp = null;
+	
 	mongo.insertDocument(user,userCollection,function(err,results){
 	    callback(err,results);
 	});
@@ -80,7 +88,7 @@ module.exports = {
      **/
     deleteUser: function(userId,callback){
 	var filter = {};
-	filter._id = Number(userId);
+	filter._id = userId;
 	mongo.removeDocument(filter,userCollection, function(err,results){
 	    callback(err,results);
 	});
@@ -92,6 +100,70 @@ module.exports = {
     removeAllUsers: function(callback){
 	mongo.removeAllDocuments(userCollection, function(err, deleted) {
 	    callback(err, deleted);
+	});
+    },
+
+    /**
+     * Create a token of connection for the user if 
+     *
+     * user is the user name
+     * pwd is the user password
+     *
+     * callback return the connection token
+     **/
+    getConnection: function(user, pwd, callback){
+	var filter = { "user": user, "pwd":pwd };
+	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
+	    if(err){
+		callback({
+                    statusCode : 500,
+                    errorMessage : err
+                });
+	    }
+	    else if(results.length == 0){
+		callback({
+                    statusCode : 500,
+                    errorMessage : "The combination of the user and the password is undefined"
+                });
+		
+	    }
+	    else{
+		var user = results[0];
+		user.connection = createGuid();
+		user.timeStamp = (Date.now() / 1000 | 0);
+		callback(null,user.connection);
+	    }
+	});
+    },
+
+    checkConnection: function(connection, callback){
+	var filter = { "connection" : connection };
+	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
+	    if(err){
+		callback({
+                    statusCode : 500,
+                    errorMessage : err
+                });
+	    }
+	    else if(results.length == 0){
+		callback({
+                    statusCode : 500,
+                    errorMessage : "The connection token is undefined"
+                });
+		
+	    }
+	    else{
+		var user = results[0];
+		if( (user.timeStamp+3600) <  (Date.now() / 1000 | 0) ){
+		    callback({
+			statusCode : 500,
+			errorMessage : "The connection token expired"
+                    });
+		}
+		else{
+		    callback(null,user);
+		}
+	    }
 	});
     },
 
@@ -123,7 +195,7 @@ module.exports = {
      * midId is the _id of the mix
      *
      **/
-    deleteMix: function(userId,mixId){
+    deleteMix: function(userId,mixId,callback){
 	getUser(userId,function(err,result){
 	    if(err==null){
 		result.mixis.push(mixId);

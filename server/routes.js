@@ -10,6 +10,7 @@ var TRACKS_PATH = 'multitrack/';
 
 var song = require('./songDB');
 var mix = require('./mixDB');
+var user = require('./userDB');
 
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
@@ -49,6 +50,38 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
     res.sendfile(TRACKS_PATH + req.params[0] + '/' + req.params[1]);
 });
 
+//routing user
+
+
+router.get('/user/:id', function(req,res){
+    user.getUser(req.params.id,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+            res.statusCode = 500;
+            res.send(JSON.stringify(err));
+        }
+	else{
+	    res.statusCode = 200;
+            res.send(JSON.stringify(results));
+	}
+    });
+});
+
+
+router.post('/user', function(req,res){
+    user.addUser(req.body.name,req.body.pwd,req.body.right,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+            res.statusCode = 500;
+            res.send(JSON.stringify(err));
+        }
+	else{
+	    res.statusCode = 200;
+            res.send(JSON.stringify(results));
+	}
+    });
+});
+
 
 // routing song
 router.get('/songs',function(req,res) {
@@ -64,6 +97,8 @@ router.get('/songs',function(req,res) {
         }
     });
 });
+
+
 
 router.post('/song',function(req,res) {
     song.postSong(req.body, function(err, result) {
@@ -209,5 +244,7 @@ function getFiles(dirName, callback) {
         callback(directoryObject);
     });
 }
+
+
 
 module.exports = router;
