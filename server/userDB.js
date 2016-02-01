@@ -1,6 +1,14 @@
-//user has an name, an id, mix
+//user has an name, pwd, id, right, mixId, commentId, connexionToken, timestamp
 var mongo = require('./manageMongo');
 var userCollection = "user";
+
+function createGuid()
+{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
 
 module.exports = {
 
@@ -59,7 +67,7 @@ module.exports = {
 	user.name = name;
 	user.right = right;
 	user.mixis = [];
-	postUser(user,function(err,results){
+	mongo.insertDocument(user,userCollection,function(err,results){
 	    callback(err,results);
 	});
     },
