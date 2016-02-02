@@ -82,23 +82,19 @@ describe('userDB test', function() {
 	});
     });
 
-    it('should get then remove a user',function(done){
-	user.addUser("user1","pwd1","normal",function(err, results){
+    it('should get connection then user then remove him',function(done){
+	user.addUser("user1","pwd1","admin",function(err, results){
 	    assert.equal(err,null);
-	    user.getUsers(function(err, results){
-		assert.equal(err,null);
-		var id = results[0]._id;
-		user.getUser(id,function(err,results){
+	    user.getConnection("user1","pwd1",function(err,connection){
+		user.getUser(connection,function(err,user1){
 		    assert.equal(err,null);
-		    assert.equal(results[0].name,"user1");
-		    assert.equal(results[0].pwd,"pwd1");
-		    assert.equal(results[0].right,"normal");
-		    assert.deepEqual(results[0].mixes,[]);
-		    assert.deepEqual(results[0].comments,[]);
-		    assert.equal(results[0].connexion,null);
-		    assert.equal(results[0].timeStamp,null);
-
-		    user.deleteUser(id,function(err,results){
+		    assert.equal(user1.name,"user1");
+		    assert.equal(user1.pwd,null);
+		    assert.equal(user1.right,"admin");
+		    assert.deepEqual(user1.mixes,[]);
+		    assert.deepEqual(user1.comments,[]);
+		    assert.equal(user1.connection,connection);
+		    user.deleteUser(connection,user1._id,function(err,results){
 			assert.equal(err,null);
 			user.getUsers(function(err,results){
 			    assert.equal(err,null);
@@ -110,6 +106,30 @@ describe('userDB test', function() {
 	    });
 	});
     });
+
+        it('should be unable to remove the user',function(done){
+	user.addUser("user1","pwd1","normal",function(err, results){
+	    assert.equal(err,null);
+	    user.getConnection("user1","pwd1",function(err,connection){
+		user.getUser(connection,function(err,user1){
+		    assert.equal(err,null);
+		    assert.equal(user1.name,"user1");
+		    assert.equal(user1.pwd,null);
+		    assert.equal(user1.right,"normal");
+		    assert.deepEqual(user1.mixes,[]);
+		    assert.deepEqual(user1.comments,[]);
+		    assert.equal(user1.connection,connection);
+		    user.deleteUser(connection,user1._id,function(err,results){
+			assert.equal(err.statusCode,500);
+			assert.equal(err.errorMessage,"This connection token does not have the right to delete this user");
+			done();
+
+		    });
+		});
+	    });
+	});
+    });
+
 
     
     it('should get the connection token', function(done){

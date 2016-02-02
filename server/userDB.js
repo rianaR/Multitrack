@@ -30,20 +30,6 @@ module.exports = {
 	});
     },
 
-    /**
-     *
-     * Give the user which match with userId
-     *
-     * userId is the _id of the user
-     **/
-    getUser: function(userId,callback){
-
-	var filter = { _id : userId };
-	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
-	    callback(err, results);	    
-	});
-	
-    },
 
     /**
      * Add or update an user (not recommended, you should use addUser)
@@ -86,9 +72,19 @@ module.exports = {
      *
      * userId is the _id of the user
      **/
-    deleteUser: function(userId,callback){
-	mongo.removeDocument(userId,userCollection, function(err,results){
-	    callback(err,results);
+    deleteUser: function(connection,userId,callback){
+	this.getUser(connection,function(err, user1){
+	    if(user1.right != "admin"){
+		callback({
+                    statusCode : 500,
+                    errorMessage : "This connection token does not have the right to delete this user"
+                });
+	    }
+	    else{
+		mongo.removeDocument(userId,userCollection, function(err,results){
+		    callback(err,results);
+		});
+	    }
 	});
     },
 
@@ -109,8 +105,8 @@ module.exports = {
      *
      * callback return the connection token
      **/
-    getConnection: function(user, pwd, callback){
-	var filter = { "user": user, "pwd":pwd };
+    getConnection: function(name, pwd, callback){
+	var filter = { "name": name, "pwd":pwd };
 	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
 	    if(err){
 		callback({
@@ -126,15 +122,23 @@ module.exports = {
 		
 	    }
 	    else{
-		var user = results[0];
-		user.connection = createGuid();
-		user.timeStamp = (Date.now() / 1000 | 0);
-		callback(null,user.connection);
+		var user1 = results[0];
+		user1.connection = createGuid();
+		user1.timeStamp = (Date.now() / 1000 | 0);
+		mongo.updateDocument(user1,userCollection,function(err,results){
+		    callback(null,user1.connection);
+		});
 	    }
 	});
     },
 
-    checkConnection: function(connection, callback){
+    /**
+     *  give the user according to the connection, for security reason, pwd is set to null
+     *
+     *  connection is the connection token
+     *
+     **/
+    getUser: function(connection, callback){
 	var filter = { "connection" : connection };
 	mongo.findDocumentsByFilter(filter, userCollection, function(err, results) {
 	    if(err){
@@ -158,8 +162,10 @@ module.exports = {
 			errorMessage : "The connection token expired"
                     });
 		}
-		else{
+		else{	    
+		    user.pwd = null;
 		    callback(null,user);
+
 		}
 	    }
 	});

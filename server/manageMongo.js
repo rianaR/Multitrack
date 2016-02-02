@@ -9,9 +9,9 @@ module.exports = {
 	 *
 	 * name is the name of the new database
 	 **/
-	setDB: function(name){
-		url = 'mongodb://localhost:27017/'+name;
-	},
+    setDB: function(name){
+	url = 'mongodb://localhost:27017/'+name;
+    },
 
     /**
      *   insert a document into the database
@@ -22,26 +22,26 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     insertDocument : function(doc,collection,callback) {
-		MongoClient.connect(url, function(err,db) {
-			if (err) {
-				callback(err);
-				db.close();
-			}
-			else {
-				console.log("Connected correctly to server.");
-				db.collection(collection).insertOne(doc, function (err, result) {
-					if (err) {
-						callback(err);
-					}
-					else {
-						console.log("Inserted a document into the " + collection + " collection.");
-						callback(null, result);
-					}
-					db.close();
-				});
-			}
-
+	MongoClient.connect(url, function(err,db) {
+	    if (err) {
+		callback(err);
+		db.close();
+	    }
+	    else {
+		console.log("Connected correctly to server.");
+		db.collection(collection).insertOne(doc, function (err, result) {
+		    if (err) {
+			callback(err);
+		    }
+		    else {
+			console.log("Inserted a document into the " + collection + " collection.");
+			callback(null, result);
+		    }
+		    db.close();
 		});
+	    }
+
+	});
     },
 
 
@@ -55,63 +55,63 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     findDocuments: function(collection, callback) {
-		MongoClient.connect(url, function(err, db) {
-			if (err) {
-				callback(err);
-				db.close();
+	MongoClient.connect(url, function(err, db) {
+	    if (err) {
+		callback(err);
+		db.close();
+	    }
+	    else {
+		var cursor = db.collection(collection).find();
+		var result = [];
+		cursor.each(function (err, doc) {
+		    if (err) {
+			callback(err);
+			db.close();
+		    }
+		    else {
+			if (doc != null) {
+			    result.push(doc);
+			} else {
+			    callback(null, result);
+			    db.close();
 			}
-			else {
-				var cursor = db.collection(collection).find();
-				var result = [];
-				cursor.each(function (err, doc) {
-					if (err) {
-						callback(err);
-						db.close();
-					}
-					else {
-						if (doc != null) {
-							result.push(doc);
-						} else {
-							callback(null, result);
-							db.close();
-						}
-					}
-				});
-			}
+		    }
 		});
+	    }
+	});
     },
 
     
     /**
      *   find a document into the database
      *
-	 *
+     *
      *   collection is the name of the table in mongodb
      *   callback must be called at the end of the method
      **/
     findDocumentsByFilter: function(filter, collection, callback) {
-		MongoClient.connect(url, function(err, db) {
-			if (err) {
-				callback(err);
-				db.close();
-			}
-			else {
-				var cursor = db.collection(collection).find(filter);
-				var result = [];
-				cursor.each(function (err, doc) {
-					if (err) {
-						callback(err);
-						db.close();
-					}
-					if (doc != null) {
-						result.push(doc);
-					} else {
-						callback(err, result);
-						db.close();
-					}
-				});
-			}
+	MongoClient.connect(url, function(err, db) {
+	    if (err) {
+		callback(err);
+		db.close();
+	    }
+	    else {
+		var cursor = db.collection(collection).find(filter);
+		var result = [];
+		cursor.each(function (err, doc) {
+		    if (err) {
+			callback(err);
+			db.close();
+		    }
+		    if (doc != null) {
+			result.push(doc);
+		    } else {
+			callback(err, result);
+			db.close();
+		    }
 		});
+	    }
+	});
     },
 
     /**
@@ -122,29 +122,29 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     removeDocument: function(id, collection, callback) {
-		MongoClient.connect(url, function(err, db) {
+	MongoClient.connect(url, function(err, db) {
+	    if (err) {
+		db.close();
+		callback(err);
+	    }
+	    else {
+		console.log("Connected correctly to server.");
+		var object_id = new ObjectID(id);
+		db.collection(collection).deleteMany(
+		    {"_id" : object_id },
+		    function(err, deleted) {
 			if (err) {
-				db.close();
-				callback(err);
+			    console.log("Error on deleting document");
+			    callback(err);
 			}
 			else {
-				console.log("Connected correctly to server.");
-				var object_id = new ObjectID(id);
-				db.collection(collection).deleteMany(
-					{"_id" : object_id },
-					function(err, deleted) {
-						if (err) {
-							console.log("Error on deleting document");
-							callback(err);
-						}
-						else {
-							console.log("Document in "+collection+"has been deleted");
-							callback(null, deleted);
-						}
-					}
-				);
+			    console.log("Document in "+collection+"has been deleted");
+			    callback(null, deleted);
 			}
-		});
+		    }
+		);
+	    }
+	});
     },
 
     /**
@@ -155,27 +155,59 @@ module.exports = {
      *   callback must be called at the end of the method
      **/
     removeAllDocuments: function(collection, callback) {
+	MongoClient.connect(url, function(err, db) {
+	    if (err) {
+		callback(err);
+	    }
+	    else {
+		console.log("Connected correctly to server.");
+		db.collection(collection).deleteMany({},
+						     function (err, deleted) {
+							 if (err) {
+							     console.log("Error on deleting all documents");
+							     callback(err);
+							 }
+							 else {
+							     console.log("All documents in "+collection+"have been deleted");
+							     callback(err, deleted);
+							 }
+							 db.close();
+						     }
+						    );
+	    }
+	});
+    },
+    
+    
+    /**
+     * Update a document by replacing all his data by the new one
+     *
+     * document is the new document
+     * collection is the database to use
+     *
+     **/
+    updateDocument: function(document, collection,callback) {
 		MongoClient.connect(url, function(err, db) {
-			if (err) {
-				callback(err);
-			}
-			else {
-				console.log("Connected correctly to server.");
-				db.collection(collection).deleteMany({},
-					function (err, deleted) {
-						if (err) {
-							console.log("Error on deleting all documents");
-							callback(err);
-						}
-						else {
-							console.log("All documents in "+collection+"have been deleted");
-							callback(err, deleted);
-						}
-						db.close();
-					}
-				);
-			}
-		});
+	    if (err) {
+		callback(err);
+	    }
+	    else {
+		console.log("Connected correctly to server.");
+		db.collection(collection).replaceOne({ "_id" : document._id },
+						     document,
+						     function (err, deleted) {
+							 if (err) {
+							     console.log("Error on updating document");
+							     callback(err);
+							 }
+							 else {
+							     console.log("All documents in "+collection+"have been deleted");
+							     callback(err, deleted);
+							 }
+							 db.close();
+						     });
+	    }
+	});
     }
 
 };
