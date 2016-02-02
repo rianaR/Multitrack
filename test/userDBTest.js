@@ -1,6 +1,7 @@
 var assert = require('assert');
 var user = require('../server/userDB');
 var mix = require('../server/mixDB');
+var ObjectID = require('mongodb').ObjectID;
 
 user.setDB('test');
 
@@ -143,47 +144,47 @@ describe('userDB test', function() {
 		});    
 	    });
 	});
-    });
-
-    it('should return that the user', function(done){done() });
-	
-  
-
-    /*
-    it('should get then remove a user',function(done){
+    });  
+   
+    it('should add a mix to an user',function(done){
 	user.addUser("user1","pwd1","normal",function(err, results){
 	    assert.equal(err,null);
-	    user.getUsers(function(err, results){
+	    user.getConnection("user1","pwd1",function(err,connection){
 		assert.equal(err,null);
-		var user1Id = results[0]._id;
-		
-		mix1 = {
-                    "_id": 5,
-                    "name": "mix1",
-                    "user_id": 45,
-                    "song_id": 1,
-                    "effects": [
-			{
-                            "track": "guitare",
-                            "name": "volume",
-                            "value": 0.3
-			},
-			{
-                            "track": "batterie",
-                            "name": "mute",
-                            "value": 1
-			}
-                    ]
-		};
-
-		mix.postMix(user1Id,mix1._id,function(err,results){
-		    user.getUsers(function(err,results) {
-			assert.deepEqual(results[0].mixes[0],mix1);
+		var id =new ObjectID("56af746c0f9c57894d37c859");
+		user.addMix(connection,id,function(err,results){
+		    assert.equal(err,null);
+		    user.getUser(connection,function(err,user1){
+			assert.equal(err,null);
+			assert.equal(user1.connection,connection);
+			assert.deepEqual(user1.mixes[0],id);
 			done();
-		    }); 
+		    });
 		});
 	    });
 	});
     });
-    */
+    
+
+    it('should add a mix to an user then remove it',function(done){
+	user.addUser("user1","pwd1","normal",function(err, results){
+	    assert.equal(err,null);
+	    user.getConnection("user1","pwd1",function(err,connection){
+		assert.equal(err,null);
+		var id = new ObjectID("56af746c0f9c57894d37c859");
+		user.addMix(connection,id,function(err,results){
+		    assert.equal(err,null);
+		    user.deleteMix(connection,id,function(err,results){
+			assert.equal(err,null);
+			user.getUser(connection,function(err,user1){
+			    assert.equal(err,null);
+			    assert.deepEqual(user1.mixes,[]);
+			    done();
+			});
+		    });
+		});
+	    });
+	});
+    });
+    
 });

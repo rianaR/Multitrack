@@ -65,6 +65,18 @@ module.exports = {
 	    callback(err,results);
 	});
     },
+    
+    /**
+     * udpate an the content of an user
+     *
+     * user is the object with the new values
+     *
+     **/
+    updateUser: function(user,callback){
+	mongo.updateDocument(user,userCollection,function(err,results){
+	    callback(err,results);
+	});
+    },
 
 
     /**
@@ -93,8 +105,16 @@ module.exports = {
      **/
     removeAllUsers: function(callback){
 	mongo.removeAllDocuments(userCollection, function(err, deleted) {
-	    callback(err, deleted);
+	    if(err){
+		callback({
+		    errorMessage : err
+		});
+	    }
+	    else{
+		callback(err, deleted);
+	    }
 	});
+
     },
 
     /**
@@ -131,6 +151,8 @@ module.exports = {
 	    }
 	});
     },
+
+    
 
     /**
      *  give the user according to the connection, for security reason, pwd is set to null
@@ -174,14 +196,15 @@ module.exports = {
     /**
      * Add a mix to an user
      *
-     * userId is the _id of the user
+     * connection is the connection token of the user
      * mixId is the _id of the mix
      **/
-    addMix: function(userId,mixId,callback){
-	getUser(userId,function(err,result){
+    addMix: function(connection,mixId,callback){
+	var obj = this;
+	this.getUser(connection,function(err,user1){
 	    if(err==null){
-		result.mixis.push(mixId);
-		postUser(result,function(err,results){
+		user1.mixes.push(mixId);
+		obj.updateUser(user1,function(err,results){
 		    callback(err,results);
 		});
 	    }
@@ -192,18 +215,24 @@ module.exports = {
     },
 
     /**
-     *
      * Delete a mix of a user
      *
      * userId is the _id of the user
      * midId is the _id of the mix
      *
      **/
-    deleteMix: function(userId,mixId,callback){
-	getUser(userId,function(err,result){
+    deleteMix: function(connection,mixId,callback){
+	var obj = this;
+	this.getUser(connection,function(err,user1){
 	    if(err==null){
-		result.mixis.push(mixId);
-		postUser(result,function(err,results){
+		var mixes = [];
+		for(var i=0;i<user1.mixes.length;i++){
+		    if(! user1.mixes[i].equals(mixId)){
+			mixes.push(user1.mixes[i]);
+		    }
+		}
+		user1.mixes = mixes;
+		obj.updateUser(user1,function(err,results){
 		    callback(err,results);
 		});
 	    }
