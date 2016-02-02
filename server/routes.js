@@ -53,8 +53,8 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 //routing user
 
 
-router.get('/user/:id', function(req,res){
-    user.getUser(req.params.id,function(err,results){
+router.get('/user/:connection', function(req,res){
+    user.getUser(req.params.connection,function(err,results){
 	res.header('Content-Type', "application/json");
 	if (err) {
             res.statusCode = 500;
@@ -81,6 +81,22 @@ router.post('/user', function(req,res){
 	}
     });
 });
+
+router.post('/user/connection', function(req,res){
+    user.getConnection(req.body.name,req.body.pwd,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+            res.statusCode = 500;
+            res.send(JSON.stringify(err));
+        }
+	else{
+	    res.statusCode = 200;
+            res.send(JSON.stringify(results));
+	}
+    });
+});
+
+
 
 
 // routing song
