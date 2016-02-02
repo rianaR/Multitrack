@@ -87,9 +87,7 @@ module.exports = {
      * userId is the _id of the user
      **/
     deleteUser: function(userId,callback){
-	var filter = {};
-	filter._id = userId;
-	mongo.removeDocument(filter,userCollection, function(err,results){
+	mongo.removeDocument(userId,userCollection, function(err,results){
 	    callback(err,results);
 	});
     },
