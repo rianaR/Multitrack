@@ -1,7 +1,7 @@
 var mongo = require('./manageMongo');
 var ObjectID = require('mongodb').ObjectId;
-var songDB = require('./songDB');
-var user = require('./userDB');
+var mixDB = require('./mixDB');
+var userDB = require('./userDB');
 
 var inputValidator = require('./inputValidator');
 
@@ -19,13 +19,13 @@ module.exports = {
         mongo.setDB(name);
     },
 
-    createComment : function(comment, mixId, userId, callback) {
-        //TODO : createComment
+    //give the mix collection name
+    getCommentDB: function(){
+        return commentCollection;
     },
 
-    //give the mix collection name
-    getMixDB: function(){
-        return commentCollection;
+    createComment : function(comment, mixId, userId, callback) {
+        //TODO : createComment
     },
 
     getCommentsByMix : function(mixId, callback) {
