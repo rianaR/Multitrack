@@ -202,27 +202,31 @@ var mixesToAdd = [
         "name": "mix1",
         "user_id": 45,
         "song": {
-            "_id": new ObjectID("56af72df2e23372e947501d8"),
-            "artist": "Deep Purple",
-            "song": "Smoke On The Water",
-            "released": 1972,
-            "path": "multitrack/deep_smoke/",
+            "_id": new ObjectID("56af72df2e23372e947501d7"),
+            "artist": "James Brown",
+            "song": "Get Up",
+            "released": 1970,
+            "path": "multitrack/jamesbrown_get/",
             "track": [
                 {
                     "name": "basse",
-                    "path": "track/deep_smoke/sound/basse.mp3"
+                    "path": "track/jamesbrown_get/sound/basse.mp3"
                 },
                 {
                     "name": "batterie",
-                    "path": "track/deep_smoke/sound/batterie.mp3"
+                    "path": "track/jamesbrown_get/sound/batterie.mp3"
+                },
+                {
+                    "name": "extra",
+                    "path": "track/jamesbrown_get/sound/extra.mp3"
                 },
                 {
                     "name": "guitare",
-                    "path": "track/deep_smoke/sound/guitare.mp3"
+                    "path": "track/jamesbrown_get/sound/guitare.mp3"
                 },
                 {
                     "name": "voix",
-                    "path": "track/deep_smoke/sound/voix.mp3"
+                    "path": "track/jamesbrown_get/sound/voix.mp3"
                 }
             ]
         },
@@ -230,57 +234,62 @@ var mixesToAdd = [
         "trackEffects" : [
             {
                 "track": "guitare",
-                "volume" : 0.8,
-                "mute" : true
+                "volume" : 0.1,
+                "mute" : false
             },
             {
                 "track": "batterie",
-                "volume": 0.3,
+                "volume": 0.2,
                 "mute": true
+            },
+            {
+                "track": "basse",
+                "volume": 0.3,
+                "mute": false
+            },
+            {
+                "track": "extra",
+                "volume": 0.2,
+                "mute": false
+            },
+            {
+                "track": "voix",
+                "volume": 0.2,
+                "mute": false
             }
         ],
         "comments": [
-            {
-                "user": {
-                    "user_id": 12,
-                    "pseudo": "pseudo1"
-                },
-                "comment": "Awesome!!"
-            },
-            {
-                "user": {
-                    "user_id": 16,
-                    "pseudo": "pseudo2"
-                },
-                "comment": "Boring mix..."
-            }
         ]
     },
     {
         "name": "mix2",
         "user_id": 45,
         "song": {
-            "_id": new ObjectID("56af72df2e23372e947501d8"),
-            "artist": "Deep Purple",
-            "song": "Smoke On The Water",
-            "released": 1972,
-            "path": "multitrack/deep_smoke/",
+            "_id": new ObjectID("56af72df2e23372e947501d7"),
+            "artist": "James Brown",
+            "song": "Get Up",
+            "released": 1970,
+            "path": "multitrack/jamesbrown_get/",
             "track": [
                 {
                     "name": "basse",
-                    "path": "track/deep_smoke/sound/basse.mp3"
+                    "path": "track/jamesbrown_get/sound/basse.mp3"
                 },
                 {
                     "name": "batterie",
-                    "path": "track/deep_smoke/sound/batterie.mp3"
+                    "path": "track/jamesbrown_get/sound/batterie.mp3"
+                },
+                {
+                    "name": "extra",
+                    "path": "track/jamesbrown_get/sound/extra.mp3"
                 },
                 {
                     "name": "guitare",
-                    "path": "track/deep_smoke/sound/guitare.mp3"
+                    "path": "track/jamesbrown_get/sound/guitare.mp3"
                 },
                 {
                     "name": "voix",
-                    "path": "track/deep_smoke/sound/voix.mp3"
+                    "path": "track/jamesbrown_get/sound/voix.mp3"
                 }
             ]
         },
@@ -288,30 +297,31 @@ var mixesToAdd = [
         "trackEffects" : [
             {
                 "track": "guitare",
-                "volume" : 0.8,
-                "mute" : true
+                "volume" : 0.1,
+                "mute" : false
             },
             {
                 "track": "batterie",
+                "volume": 0.2,
+                "mute": false
+            },
+            {
+                "track": "basse",
                 "volume": 0.3,
+                "mute": false
+            },
+            {
+                "track": "extra",
+                "volume": 0.2,
+                "mute": false
+            },
+            {
+                "track": "voix",
+                "volume": 0.2,
                 "mute": true
             }
         ],
         "comments": [
-            {
-                "user": {
-                    "user_id": 12,
-                    "pseudo": "pseudo1"
-                },
-                "comment": "Awesome!!"
-            },
-            {
-                "user": {
-                    "user_id": 16,
-                    "pseudo": "pseudo2"
-                },
-                "comment": "Boring mix..."
-            }
         ]
     }
 ];
