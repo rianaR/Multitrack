@@ -1,10 +1,6 @@
 var Validator = require("jsonschema").Validator;
 var ObjectID = require('mongodb').ObjectId;
 
-var NO_ERROR = 0;
-var ERROR_BAD_ID = 1;
-
-
 var InputValidator = {
     validateSong: function (song) {
         //Description d'un document song
@@ -114,6 +110,13 @@ var InputValidator = {
         }
 
         return result;
+    },
+
+    validateComment : function(comment) {
+        /*
+
+
+         */
     }
 };
 
