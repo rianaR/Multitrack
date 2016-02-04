@@ -253,8 +253,8 @@ module.exports = {
 		callback(err);
 	    }
 	    else{
-		if(checkRight(user1,updateMix._id)){
-		    app.removeMix(mixId,callback);
+		if(checkRight(user1,mixId)){
+		    app.removeMix(String(mixId),callback);
 		}
 		else{
 		    callback(
