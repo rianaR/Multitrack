@@ -5,6 +5,7 @@ var path = require('path');
 var mongo = require('./manageMongo');
 var ObjectID = require('mongodb').ObjectId;
 var songDB = require('./songDB');
+var user = require('./userDB');
 
 var mixCollection = "mix";
 
@@ -81,7 +82,7 @@ module.exports = {
     },
 
     getMixByID: function (mixId, callback) {
-        if (isNaN(Number(mixId))) {
+	if(!(ObjectID.isValid(mixId._id.toString()))){
             callback(
                 {
                     statusCode : 400,
@@ -90,7 +91,7 @@ module.exports = {
             );
         }
         else {
-            var filter = { "_id" : new ObjectID(mixId) };
+            var filter = { "_id" : new ObjectID(mixId._id) };
             mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
                 if (err) {
                     callback({
@@ -141,17 +142,71 @@ module.exports = {
         });
     },
 
+    /**
+     * add a mix in the database and associate it to a user
+     *
+     * connection is the connection token
+     * mix is the resource added in the database
+     **/
+    postUserMix: function(connection, mix, callback) {
+	var app = this;
+	user.getUser(connection,function(err,user1){
+	    if(err){
+		callback(err);
+	    }
+	    else{
+		app.postMix(mix,function(err,postedMix){
+		    if(err){
+			callback(err);
+		    }
+		    else{
+			user1.mixes.push(postedMix.insertedId);
+			user.updateUser(user1,function(err,results){
+			    callback(err,results);
+			});
+		    }
+		});
+	    }
+	});
+    },
+
+    
     updateMix: function(updatedMix, callback) {
-        this.getMixByID(updatedMix._id, function(err, mixToUpdate) {
+	var app = this;
+        this.getMixByID(updatedMix, function(err, mixToUpdate) {
             if (err) {
                 callback(err);
             }
             else {
                 mixToUpdate.effects = updatedMix.effects;
                 mixToUpdate.name = updatedMix.name;
-                this.postMix(mixToUpdate, callback);
+		mongo.updateDocument(mixToUpdate,mixCollection,function(err,results){
+		    callback(err,results);
+		});
             }
         });
+    },
+
+    updateUserMix: function(connection, updateMix, callback){
+	var app =  this;
+	user.getUser(connection,function(err,user1){
+	    if(err){
+		callback(err);
+	    }
+	    else{
+		if(checkRight(user1,updateMix._id)){
+		    app.updateMix(updateMix,callback);
+		}
+		else{
+		    callback(
+			{
+			    statusCode : 401,
+			    errorMessage : "Unauthorized, you don't have the right to update this mix"
+			}
+		    );
+		}
+	    }
+	});
     },
 
     /**
@@ -185,6 +240,35 @@ module.exports = {
     },
 
     /**
+     * remove the mix if the user have the rights for it
+     *
+     * connection is the connection token
+     * mixId is the id of the mix
+     *
+     **/
+    removeUserMix: function(connection,mixId, callback){
+	var app =  this;
+	user.getUser(connection,function(err,user1){
+	    if(err){
+		callback(err);
+	    }
+	    else{
+		if(checkRight(user1,updateMix._id)){
+		    app.removeMix(mixId,callback);
+		}
+		else{
+		    callback(
+			{
+			    statusCode : 401,
+			    errorMessage : "Unauthorized, you don't have the right to update this mix"
+			}
+		    );
+		}
+	    }
+	});
+    },
+
+    /**
      * Remove all the mix from the database
      **/
     removeAllMixes: function(callback) {
@@ -202,3 +286,19 @@ module.exports = {
     }
     
 };
+
+function checkRight(user,mixId){
+
+    if(user.right == "admin"){
+	return true;
+    }
+    else{
+	for(var i = 0 ; i<user.mixes.length; i++){
+	    if(user.mixes[i].equals(mixId)){
+		return true;
+	    }
+	}
+	return false;
+    }
+
+}

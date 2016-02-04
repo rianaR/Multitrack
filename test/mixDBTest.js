@@ -2,6 +2,7 @@ var assert = require('assert');
 var mix = require('../server/mixDB');
 var songDB = require('../server/songDB');
 var ObjectID = require('mongodb').ObjectID;
+var user = require('../server/userDB');
 
 mix.setDB('test');
 songDB.setDB('test');
@@ -208,4 +209,109 @@ describe("mix test", function () {
         });
     });
 
+    it('should add a mix in the mixDB and in userDB', function (done) {
+	user.addUser("user1","pwd","normal",function(err,results){
+	    assert.equal(err, null);
+	    user.getConnection("user1","pwd",function(err,connection){
+		assert.equal(err, null);
+		mix1 = {
+		    "_id" : new ObjectID("56af754df0500975b6dfc63c"),
+		    "name": "mix1",
+		    "user_id": 45,
+		    "song_id": "56af72df2e23372e947501d8",
+		    "masterVolume" : 0.7,
+		    "trackEffects" : [
+			{
+			    "track": "guitare",
+			    "volume" : 0.8,
+			    "mute" : 1
+			},
+			{
+			    "track": "batterie",
+			    "volume": 0.3,
+			    "mute": 1
+			}
+		    ]
+		};
+		mix.postUserMix(connection,mix1, function (err, results) {
+		    assert.equal(err, null);
+		    mix.getAllMixes(function (err, mixes) {
+			assert.equal(err, null);
+			user.getUser(connection,function(err,user1){
+			    assert.equal(err, null);
+			    assert.deepEqual(user1.mixes[0],mix1._id);
+			    assert.deepEqual(mixes[0],mix1);
+			    done()
+			});
+		    });
+		});
+	    });
+	});
+    });
+
+    it('should update the mix when the right match', function (done) {
+	user.addUser("user1","pwd","normal",function(err,results){
+	    assert.equal(err, null);
+	    user.addUser("user2","pwd","normal",function(err,results){
+		assert.equal(err, null);
+		user.addUser("admin","pwd","admin",function(err,results){
+		    assert.equal(err, null);
+		    user.getConnection("user1","pwd",function(err,connection){
+			assert.equal(err, null);
+			mix1 = {
+			    "name": "mix1",
+			    "user_id": 45,
+			    "song_id": "56af72df2e23372e947501d8",
+			    "masterVolume" : 0.7,
+			    "trackEffects" : [
+				{
+				    "track": "guitare",
+				    "volume" : 0.8,
+				    "mute" : 1
+				},
+				{
+				    "track": "batterie",
+				    "volume": 0.3,
+				    "mute": 1
+				}
+			    ]
+			};
+			user.getUser(connection, function(err, user1){
+			    mix.postUserMix(connection,mix1, function (err, results) {
+				assert.equal(err, null);
+				mix1.name = "mix2";
+				mix.updateUserMix(connection,mix1,function(err,results) {
+				    assert.equal(err, null);
+				    mix.getAllMixes(function(err,mixes){
+					assert.equal(err, null);
+					assert.equal(mixes[0].name,"mix2");
+					user.getConnection("user2","pwd",function(err,connection){
+					    assert.equal(err,null);
+					    mix1.name = "mix3";
+					    mix.updateUserMix(connection,mix1,function (err, results){
+						assert.equal(err.statusCode, 401);
+						assert.equal(err.errorMessage,"Unauthorized, you don't have the right to update this mix");
+	    					user.getConnection("admin","pwd",function(err,connection){
+						    assert.equal(err,null);
+						    mix1.name = "mix4";
+						    mix.updateUserMix(connection,mix1,function (err, results){
+							assert.equal(err,null);
+							mix.getAllMixes(function(err,mixes){
+							    assert.equal(err, null);
+							    assert.equal(mixes[0].name,"mix4");
+							    done();
+							});
+						    });
+						});
+					    });
+					});
+				    });
+				});
+			    });
+			});
+		    });
+		});
+	    });
+	});
+    });	    
 });
