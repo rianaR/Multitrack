@@ -85,7 +85,7 @@ var InputValidator = {
                         "properties" :{
                             "track" : { "type" : "string", "required" : true },
                             "volume": { "type" : "number", "required" : true },
-                            "mute": { "type" : "integer", "required" : true }
+                            "mute": { "type" : "boolean", "required" : true }
                         }
                     }
                 }
