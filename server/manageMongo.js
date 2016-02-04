@@ -168,7 +168,7 @@ module.exports = {
 							     callback(err);
 							 }
 							 else {
-							     console.log("All documents in "+collection+"have been deleted");
+							     console.log("All documents in "+collection+" have been deleted");
 							     callback(err, deleted);
 							 }
 							 db.close();
