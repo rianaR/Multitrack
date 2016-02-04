@@ -7,6 +7,8 @@ var ObjectID = require('mongodb').ObjectId;
 var songDB = require('./songDB');
 var user = require('./userDB');
 
+var inputValidator = require('./inputValidator');
+
 var mixCollection = "mix";
 
 
@@ -82,16 +84,16 @@ module.exports = {
     },
 
     getMixByID: function (mixId, callback) {
-	if(!(ObjectID.isValid(mixId._id.toString()))){
+        if (!(ObjectID.isValid(mixId))) {
             callback(
                 {
                     statusCode : 400,
-                    errorMessage : "Invalid request : mixID is invalid"
+                    errorMessage : "Invalid request : mix id is invalid"
                 }
             );
         }
         else {
-            var filter = { "_id" : new ObjectID(mixId._id) };
+            var filter = { "_id" : new ObjectID(mixId) };
             mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
                 if (err) {
                     callback({
@@ -104,43 +106,63 @@ module.exports = {
             });
         }
     },
-    
-    /**
-     * add a mix in the database
-     *
-     * mix is the resource added in the database
-     **/
+
     postMix: function(mix, callback) {
-        //TODO : Vérifier que la requête d'ajout de mix est valide
-        var mixID = new ObjectID(mix.song_id);
-        mongo.findDocumentsByFilter({ "_id" : mixID }, songDB.getSongDB(), function(err, results) {
-            if (err) {
-                //Le mix n'est asoscié à aucune chanson
-                callback({
-                    statusCode : 500,
-                    errorMessage : err
-                });
-            }
-            else {
-                //On remplace l'id de chanson par la chanson entière
-                delete mix.song_id;
-                mix.song = results[0];
-                mix.comments = [];
-                mongo.insertDocument(mix, mixCollection, function(err, results) {
-                    if (err) {
-                        callback({
-                            statusCode : 500,
-                            errorMessage : err
+        var mixValidation = inputValidator.validateMix(mix);
+        if (!mixValidation.valid) {
+            callback({
+                statusCode : 400,
+                errorMessage : mixValidation.errorMessages
+            });
+        }
+        else {
+            var songID = new ObjectID(mix.song_id);
+            mongo.findDocumentsByFilter({ "_id" : songID }, songDB.getSongDB(), function(err, results) {
+                if (err) {
+                    //Le mix n'est asoscié à aucune chanson
+                    callback({
+                        statusCode : 500,
+                        errorMessage : err
+                    });
+                }
+                else {
+                    //On remplace l'id de chanson par la chanson entière
+                    delete mix.song_id;
+                    mix.song = results[0];
+                    mix.comments = [];
+                    if (mix.hasOwnProperty("_id")) {
+                        mix._id = new ObjectID(mix._id);
+                        mongo.updateDocument(mix, mixCollection, function(err, results) {
+                            if (err) {
+                                callback({
+                                    statusCode : 500,
+                                    errorMessage : err
+                                });
+                            }
+                            else {
+                                callback(null, results);
+                            }
                         });
                     }
                     else {
-                        callback(null, results);
+                        mongo.insertDocument(mix, mixCollection, function(err, results) {
+                            if (err) {
+                                callback({
+                                    statusCode : 500,
+                                    errorMessage : err
+                                });
+                            }
+                            else {
+                                callback(null, results);
+                            }
+                        });
                     }
-                });
-            }
+                }
 
-        });
+            });
+        }
     },
+
 
     /**
      * add a mix in the database and associate it to a user
@@ -149,64 +171,64 @@ module.exports = {
      * mix is the resource added in the database
      **/
     postUserMix: function(connection, mix, callback) {
-	var app = this;
-	user.getUser(connection,function(err,user1){
-	    if(err){
-		callback(err);
-	    }
-	    else{
-		app.postMix(mix,function(err,postedMix){
-		    if(err){
-			callback(err);
-		    }
-		    else{
-			user1.mixes.push(postedMix.insertedId);
-			user.updateUser(user1,function(err,results){
-			    callback(err,results);
-			});
-		    }
-		});
-	    }
-	});
+        var app = this;
+        user.getUser(connection,function(err,user1){
+            if(err){
+                callback(err);
+            }
+            else{
+                app.postMix(mix,function(err,postedMix){
+                    if(err){
+                        callback(err);
+                    }
+                    else{
+                        user1.mixes.push(postedMix.insertedId);
+                        user.updateUser(user1,function(err,results){
+                            callback(err,results);
+                        });
+                    }
+                });
+            }
+        });
     },
 
-    
+
     updateMix: function(updatedMix, callback) {
-	var app = this;
-        this.getMixByID(updatedMix, function(err, mixToUpdate) {
+        var app = this;
+        this.getMixByID(String(updatedMix._id), function(err, mixToUpdate) {
             if (err) {
                 callback(err);
             }
             else {
                 mixToUpdate.effects = updatedMix.effects;
                 mixToUpdate.name = updatedMix.name;
-		mongo.updateDocument(mixToUpdate,mixCollection,function(err,results){
-		    callback(err,results);
-		});
+                mongo.updateDocument(mixToUpdate,mixCollection,function(err,results){
+                    callback(err,results);
+                });
             }
         });
     },
 
     updateUserMix: function(connection, updateMix, callback){
-	var app =  this;
-	user.getUser(connection,function(err,user1){
-	    if(err){
-		callback(err);
-	    }
-	    else{
-		if(checkRight(user1,updateMix._id)){
-		    app.updateMix(updateMix,callback);
-		}
-		else{
-		    callback(
-			{
-			    statusCode : 401,
-			    errorMessage : "Unauthorized, you don't have the right to update this mix"
-			}
-		    );
-		}
-	    }
-	});
+        var app =  this;
+        user.getUser(connection,function(err,user1){
+            if(err){
+                callback(err);
+            }
+            else{
+                if(checkRight(user1,updateMix._id)){
+                    app.updateMix(updateMix,callback);
+                }
+                else{
+                    callback(
+                        {
+                            statusCode : 401,
+                            errorMessage : "Unauthorized, you don't have the right to update this mix"
+                        }
+                    );
+                }
+            }
+        });
     },
 
     /**

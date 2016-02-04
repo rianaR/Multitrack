@@ -195,6 +195,7 @@ module.exports = {
 		console.log("Connected correctly to server.");
 		db.collection(collection).replaceOne({ "_id" : document._id },
 						     document,
+							{upsert : true},
 						     function (err, deleted) {
 							 if (err) {
 							     console.log("Error on updating document");
