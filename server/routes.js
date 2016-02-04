@@ -202,6 +202,21 @@ router.post('/mix',function(req,res) {
 
 });
 
+router.post('/mix/:connection',function(req,res) {
+    mix.postUserMix(req.params.connection,req.body, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
+
+});
+
 
 router.delete('/allMix', function(req,res) {
     mix.removeAllMixes(req.params.id, function(err, deleted) {
