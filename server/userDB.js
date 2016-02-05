@@ -65,6 +65,17 @@ module.exports = {
 	    callback(err,results);
 	});
     },
+
+    getUserById: function(userId,callback){
+	mongo.findDocumentsByFilter( { "_id" : userId },userCollection ,function(err,result){
+	    if(err){
+		callback(err);
+	    }
+	    else{
+		callback(err,result[0]);
+	    }
+	});
+    },
     
     /**
      * udpate an the content of an user
@@ -187,7 +198,6 @@ module.exports = {
 		else{	    
 		    user.pwd = null;
 		    callback(null,user);
-
 		}
 	    }
 	});

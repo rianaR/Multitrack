@@ -69,20 +69,19 @@ module.exports = {
      **/
     getAllMixes: function (callback) {
 	    mongo.findDocuments(mixCollection, function(err, results) {
-            if (err) {
-                callback({
-                    errorMessage : err
-                });
-            }
-            else {
-                callback(null, results);
-
-            }
+		if (err) {
+                    callback({
+			errorMessage : err
+                    });
+		}
+		else {
+                    callback(null, results);
+		}
 	    });
     },
 
     getMixByID: function (mixId, callback) {
-	if(!(ObjectID.isValid(mixId._id.toString()))){
+	if(!(ObjectID.isValid(mixId.toString()))){
             callback(
                 {
                     statusCode : 400,
@@ -91,16 +90,23 @@ module.exports = {
             );
         }
         else {
-            var filter = { "_id" : new ObjectID(mixId._id) };
+            var filter = { "_id" : new ObjectID(mixId) };
             mongo.findDocumentsByFilter(filter, mixCollection, function(err, results) {
-                if (err) {
-                    callback({
-                        errorMessage : err
-                    });
-                }
-                else {
-                    callback(null, results[0]);
-                }
+		mongo.findDocuments(mixCollection,function(err,res){
+		    if (err) {
+			callback({
+                            errorMessage : err
+			});
+                    }
+		    else if(results.length!=1){
+			callback({
+			    errorMessage : "Invalid ID, no matching found"
+			});
+		    }
+                    else {
+			callback(null, results[0]);
+                    }
+		});
             });
         }
     },
@@ -155,6 +161,7 @@ module.exports = {
 		callback(err);
 	    }
 	    else{
+		mix.owner = user1._id;
 		app.postMix(mix,function(err,postedMix){
 		    if(err){
 			callback(err);
@@ -162,7 +169,7 @@ module.exports = {
 		    else{
 			user1.mixes.push(postedMix.insertedId);
 			user.updateUser(user1,function(err,results){
-			    callback(err,results);
+				callback(err,postedMix);
 			});
 		    }
 		});
@@ -173,7 +180,7 @@ module.exports = {
     
     updateMix: function(updatedMix, callback) {
 	var app = this;
-        this.getMixByID(updatedMix, function(err, mixToUpdate) {
+        this.getMixByID(updatedMix._id, function(err, mixToUpdate) {
             if (err) {
                 callback(err);
             }
@@ -254,7 +261,36 @@ module.exports = {
 	    }
 	    else{
 		if(checkRight(user1,mixId)){
-		    app.removeMix(String(mixId),callback);
+		    app.getMixByID(mixId,function(err,mix1){
+			app.removeMix(String(mixId),function(err, results){
+			    if(err){
+				callback(err);
+			    }
+			    else{
+				if(err){
+				    callback(err);
+				}
+				else{
+				    user.getUserById(mix1.owner,function(err,owner){
+					if(err){
+					    callback(err);
+					}
+					var tab = []
+					for(var i=0;i<owner.mixes.length;i++){
+					    if(! owner.mixes[i].equals(mixId)){
+						tab.push(owner.mixes[i]);
+					    }
+					}
+					owner.mixes = tab;
+					user.updateUser(owner,function(err,results){
+					    callback(err);
+					});
+					
+				    });
+				}
+			    }
+			});
+		    });
 		}
 		else{
 		    callback(
@@ -272,7 +308,7 @@ module.exports = {
      * Remove all the mix from the database
      **/
     removeAllMixes: function(callback) {
-	    mongo.removeAllDocuments(mixCollection, function(err, deleted) {
+	mongo.removeAllDocuments(mixCollection, function(err, deleted) {
             if (err) {
                 callback({
                     statusCode : 500,
@@ -282,7 +318,7 @@ module.exports = {
             else {
                 callback(null, deleted);
             }
-	    });
+	});
     }
     
 };

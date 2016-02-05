@@ -322,9 +322,9 @@ describe("mix test", function () {
 		assert.equal(err, null);
 		user.addUser("admin","pwd","admin",function(err,results){
 		    assert.equal(err, null);
-		    user.getConnection("user1","pwd",function(err,connection){
+		    user.getConnection("user1","pwd",function(err,connection1){
 			assert.equal(err, null);
-			mix1 = {
+			var mix1 = {
 			    "name": "mix1",
 			    "user_id": 45,
 			    "song_id": "56af72df2e23372e947501d8",
@@ -343,7 +343,7 @@ describe("mix test", function () {
 			    ]
 			};
 
-			mix2 = {
+			var mix2 = {
 			    "name": "mix2",
 			    "user_id": 45,
 			    "song_id": "56af72df2e23372e947501d8",
@@ -361,30 +361,45 @@ describe("mix test", function () {
 				}
 			    ]
 			};
-			user.getUser(connection, function(err, user1){
-			    mix.postUserMix(connection,mix1, function (err, results) {
+			user.getUser(connection1, function(err, user1){
+			    mix.postUserMix(connection1,mix1, function (err, results) {
 				assert.equal(err, null);
-				mix.postUserMix(connection,mix2, function (err, results) {
+				var mix1Id = results.insertedId;
+				mix.postUserMix(connection1,mix2, function (err, results) {
 				    assert.equal(err, null);
-
-				    mix.removeUserMix(connection,mix1._id,function(err,results) {
+				    var mix2Id = results.insertedId;
+				    mix.removeUserMix(connection1,mix1Id,function(err,results) {
 					assert.equal(err, null);
-					mix.getAllMixes(function(err,mixes){
+					user.getUser(connection1,function(err,mixes){
 					    assert.equal(err, null);
-					    assert.deepEqual(mixes[0].name,"mix2");
-					    user.getConnection("user2","pwd",function(err,connection){
-						assert.equal(err,null);
-						mix.removeUserMix(connection,mix2._id,function (err, results){
-						    assert.equal(err.statusCode, 401);
-						    assert.equal(err.errorMessage,"Unauthorized, you don't have the right to update this mix");
-	    					    user.getConnection("admin","pwd",function(err,connection){
-							assert.equal(err,null);
-							mix.removeUserMix(connection,mix2._id,function (err, results){
-							    assert.equal(err,null);
-							    mix.getAllMixes(function(err,mixes){
-								assert.equal(err, null);
-								assert.deepEqual(mixes,[]);
-								done();
+					    assert.deepEqual(mixes.mixes[0],mix2Id);
+
+					    mix.getAllMixes(function(err,mixes){
+						assert.equal(err, null);
+						assert.deepEqual(mixes[0].name,"mix2");
+						assert.deepEqual(mix2Id,mixes[0]._id);
+						user.getConnection("user2","pwd",function(err,connection){
+						    assert.equal(err,null);
+						    mix.removeUserMix(connection,mix2Id,function (err, results){
+							assert.equal(err.statusCode, 401);
+							assert.equal(err.errorMessage,"Unauthorized, you don't have the right to update this mix");
+							user.getUser(connection1,function(err,mixes){
+							    assert.equal(err, null);
+							    assert.deepEqual(mixes.mixes[0],mix2Id);
+	    						    user.getConnection("admin","pwd",function(err,connection){
+								assert.equal(err,null);
+								mix.removeUserMix(connection,mix2Id,function (err, results){
+								    assert.equal(err,null);
+								    mix.getAllMixes(function(err,mixes){
+									assert.equal(err, null);
+									assert.deepEqual(mixes,[]);
+									user.getUser(connection1,function(err,mixes){
+									    assert.equal(err, null);
+									    assert.deepEqual(mixes.mixes,[]);
+									    done();
+									});
+								    });
+								});
 							    });
 							});
 						    });
