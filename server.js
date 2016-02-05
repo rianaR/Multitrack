@@ -11,7 +11,15 @@ var app = express()
 // Indicate where static files are located
 app.use(express.static(__dirname + '/'));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({reviver : function(k, v) {
+    if (((k === "masterVolume") || (k === "volume")) &&
+        (!isNaN(Number(v)))) {
+        return Number(v);
+    }
+    else {
+        return v;
+    }
+}}));
 
 // Config
 var PORT = 8081;

@@ -1,6 +1,7 @@
 //user has an name, pwd, id, right, mixId, commentId, connexionToken, timestamp
 var mongo = require('./manageMongo');
 var userCollection = "user";
+var ObjectID = require('mongodb').ObjectId;
 
 function createGuid()
 {
@@ -67,12 +68,20 @@ module.exports = {
     },
 
     getUserById: function(userId,callback){
-	mongo.findDocumentsByFilter( { "_id" : userId },userCollection ,function(err,result){
+	mongo.findDocumentsByFilter( { "_id" : new ObjectID(userId) },userCollection ,function(err,result){
 	    if(err){
 		callback(err);
 	    }
 	    else{
-		callback(err,result[0]);
+		if(result.length!=1){
+		    callback({
+			statusCode : 201,
+			errorMessage : "Invalid ID, cannot find an user with this ID"
+		    });
+		}
+		else{
+		    callback(err,result[0]);
+		}
 	    }
 	});
     },

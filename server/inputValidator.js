@@ -1,8 +1,5 @@
 var Validator = require("jsonschema").Validator;
-
-var NO_ERROR = 0;
-var ERROR_BAD_ID = 1;
-
+var ObjectID = require('mongodb').ObjectId;
 
 var InputValidator = {
     validateSong: function (song) {
@@ -52,34 +49,41 @@ var InputValidator = {
         return result;
     },
     validateMix : function(mix) {
+        //Verifying user_id and object_id
+
+        if (mix.hasOwnProperty("_id") && !ObjectID.isValid(mix._id)) {
+            return {
+                valid : false,
+                errorMessages : "mix id is invalid"
+            }
+        }
+
+        if (!ObjectID.isValid(mix.song_id)) {
+            return {
+                valid : false,
+                errorMessages : "song id is invalid"
+            }
+        }
+
         var mixSchema = {
             "id" : "/Mix",
             "type" : "Object",
             "properties" : {
+                "_id" : { "required" : false },
+		"owner":{ "type" : "string", "required":false },
                 "name" : { "type" : "string", "required": true },
-                "user_id" : {"type" : "integer" },
-                "song_id" : { "type" : "string", "required": true },
-                "masterEffects" : {
-                    "type": "array",
-                    "required": true,
-                    "items": {
-                        "properties" :{
-                            "name": { "type" : "string", "required" : true },
-                            "value": { "type" : "integer", "required" : true }
-                        },
-                        "additionalProperties": false
-                    }
-                },
+                "user_id" : { "type" : "[string]"},
+                "song_id" : { "required" : true },
+                "masterVolume" : { "type": "number", "required": true },
                 "trackEffects" : {
                     "type": "array",
                     "required": true,
                     "items": {
                         "properties" :{
                             "track" : { "type" : "string", "required" : true },
-                            "name": { "type" : "string", "required" : true },
-                            "value": { "type" : "integer", "required" : true }
-                        },
-                        "additionalProperties": false
+                            "volume": { "type" : "number", "required" : true },
+                            "mute": { "type" : "boolean", "required" : true }
+                        }
                     }
                 }
             },
@@ -94,7 +98,8 @@ var InputValidator = {
 
         //Validation
         var validator = new Validator();
-        var validatorResult = validator.validate(song, songSchema);
+
+        var validatorResult = validator.validate(mix, mixSchema);
         //Tableau errors vide = pas d'erreurs de validation
         if (validatorResult.errors.length == 0) {
             result.valid = true;
@@ -107,6 +112,13 @@ var InputValidator = {
         }
 
         return result;
+    },
+
+    validateComment : function(comment) {
+        /*
+
+
+         */
     }
 };
 

@@ -168,7 +168,7 @@ module.exports = {
 							     callback(err);
 							 }
 							 else {
-							     console.log("All documents in "+collection+"have been deleted");
+							     console.log("All documents in "+collection+" have been deleted");
 							     callback(err, deleted);
 							 }
 							 db.close();
@@ -195,6 +195,7 @@ module.exports = {
 		console.log("Connected correctly to server.");
 		db.collection(collection).replaceOne({ "_id" : document._id },
 						     document,
+							{upsert : true},
 						     function (err, deleted) {
 							 if (err) {
 							     console.log("Error on updating document");
