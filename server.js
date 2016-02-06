@@ -12,7 +12,9 @@ var app = express()
 app.use(express.static(__dirname + '/'));
 
 app.use(bodyParser.json({reviver : function(k, v) {
-    if (((k === "masterVolume") || (k === "volume")) &&
+    if (((k === "masterVolume") ||
+        (k === "volume") ||
+        (k== "rate")) &&
         (!isNaN(Number(v)))) {
         return Number(v);
     }

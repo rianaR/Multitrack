@@ -11,6 +11,7 @@ var TRACKS_PATH = 'multitrack/';
 var song = require('./songDB');
 var mix = require('./mixDB');
 var user = require('./userDB');
+var commentDB = require('./commentDB');
 
 router.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
@@ -275,6 +276,33 @@ router.delete('/mix/:id', function(req,res) {
     });
 });
 
+router.post('/comment/create', function(req, res) {
+    commentDB.createComment(req.body, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    })
+});
+
+router.post('/comment/update', function(req, res) {
+    commentDB.updateComment(req.body, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    })
+});
 
 function getTracks(callback) {
     getFiles(TRACKS_PATH, callback);

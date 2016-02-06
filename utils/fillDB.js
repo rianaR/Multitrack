@@ -4,6 +4,7 @@ var fs = require("fs");
 var assert = require("assert");
 var song = require('../server/songDB');
 var mixDB = require('../server/mixDB');
+var commentDB = require('../server/commentDB');
 
 var songsToAdd = [
     {
@@ -259,6 +260,12 @@ var mixesToAdd = [
             }
         ],
         "comments": [
+            {
+                "_id" : new ObjectID("56b4cd215d1b19125ef9a232")
+            },
+            {
+                "_id" : new ObjectID("56b4cd9d5d1b19125ef9a233")
+            }
         ]
     },
     {
@@ -322,7 +329,48 @@ var mixesToAdd = [
             }
         ],
         "comments": [
+            {
+                "_id" : new ObjectID("56b4cd215d1b19125ef9a234")
+            },
+            {
+                "_id" : new ObjectID("56b4cd9d5d1b19125ef9a235")
+            }
         ]
+    }
+];
+
+var commentsToAdd = [
+    {
+        "_id" : new ObjectID("56b4cd215d1b19125ef9a232"),
+        "mix_id" : "",
+        "user_id" : "",
+        "content" : "Mix 1 comment no.2",
+        "rate" : 1,
+        "updatedAt" : "1454620874"
+    },
+    {
+        "_id" : new ObjectID("56b4cd215d1b19125ef9a233"),
+        "mix_id" : "",
+        "user_id" : "",
+        "content" : "Mix 2 comment no.1",
+        "rate" : 2,
+        "updatedAt" : "1454620845"
+    },
+    {
+        "_id" : new ObjectID("56b4cd215d1b19125ef9a234"),
+        "mix_id" : "",
+        "user_id" : "",
+        "content" : "Mix 2 comment no.2",
+        "rate" : 3,
+        "updatedAt" : "1454619457"
+    },
+    {
+        "_id" : new ObjectID("56b4cd215d1b19125ef9a235"),
+        "mix_id" : "",
+        "user_id" : "",
+        "content" : "Mix 1 comment no.1",
+        "rate" : 4,
+        "updatedAt" : "1454618456"
     }
 ];
 
@@ -339,7 +387,15 @@ MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
                 db.collection(mixDB.getMixDB()).insertMany(mixesToAdd, function(err, result) {
                     assert.equal(null, err);
                     console.log("Number of inserted mixes : " + result.insertedCount);
-                    db.close();
+                    commentsToAdd[0].mix_id = result.insertedIds[0];
+                    commentsToAdd[1].mix_id = result.insertedIds[0];
+                    commentsToAdd[2].mix_id = result.insertedIds[1];
+                    commentsToAdd[3].mix_id = result.insertedIds[1];
+                    db.collection(commentDB.getCommentDB()).insertMany(commentsToAdd, function(err,result) {
+                        assert.equal(null, err);
+                        console.log("Number of inserted comments : " + result.insertedCount);
+                        db.close();
+                    });
                 });
             });
         });
