@@ -262,6 +262,7 @@ describe("mix test", function () {
 	    
             mix.postMix(updatedMix, function (err, results) {
                 assert.equal(err, null);
+                assert.equal(results.modifiedCount, 1);
                 mix.getMixByID(String(results.ops[0]._id), function (err, result) {
                     assert.equal(err, null);
                     assert.equal(result.masterVolume, 0.5);

@@ -110,6 +110,7 @@ module.exports = {
     },
 
     postMix: function(mix, callback) {
+        var mixDB = this;
         var mixValidation = inputValidator.validateMix(mix);
         if (!mixValidation.valid) {
             callback({
@@ -127,40 +128,42 @@ module.exports = {
                         errorMessage : err
                     });
                 }
+                else if (mix.hasOwnProperty("_id")) {
+                    mixDB.updateMix(mix, function(err, results) {
+                        if (err) {
+                            callback({
+                                statusCode : 500,
+                                errorMessage : err
+                            });
+                            return;
+                        }
+                        if (results.modifiedCount == 0) {
+                            callback({
+                                statusCode : 400,
+                                errorMessage : "The mix has not been updated because it was not found"
+                            });
+                            return;
+                        }
+                        callback(null, results);
+                    });
+                }
                 else {
                     //On remplace l'id de chanson par la chanson entière
                     delete mix.song_id;
                     mix.song = results[0];
                     mix.comments = [];
-                    if (mix.hasOwnProperty("_id")) {
-                        mix._id = new ObjectID(mix._id);
-                        mongo.updateDocument(mix, mixCollection, function(err, results) {
-                            if (err) {
-                                callback({
-                                    statusCode : 500,
-                                    errorMessage : err
-                                });
-                            }
-                            else {
-                                callback(null, results);
-                            }
-                        });
-                    }
-                    else {
-                        mongo.insertDocument(mix, mixCollection, function(err, results) {
-                            if (err) {
-                                callback({
-                                    statusCode : 500,
-                                    errorMessage : err
-                                });
-                            }
-                            else {
-                                callback(null, results);
-                            }
-                        });
-                    }
+                    mongo.insertDocument(mix, mixCollection, function(err, results) {
+                        if (err) {
+                            callback({
+                                statusCode : 500,
+                                errorMessage : err
+                            });
+                        }
+                        else {
+                            callback(null, results);
+                        }
+                    });
                 }
-
             });
         }
     },
@@ -203,7 +206,8 @@ module.exports = {
                 callback(err);
             }
             else {
-                mixToUpdate.effects = updatedMix.effects;
+                mixToUpdate.masterVolume = updatedMix.masterVolume;
+                mixToUpdate.trackEffects = updatedMix.trackEffects;
                 mixToUpdate.name = updatedMix.name;
                 mongo.updateDocument(mixToUpdate,mixCollection,function(err,results){
                     callback(err,results);
