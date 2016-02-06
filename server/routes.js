@@ -102,47 +102,6 @@ router.get('/songs',function(req,res) {
 
 
 
-router.post('/song',function(req,res) {
-    song.postSong(req.body, function(err, result) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.statusCode = err.statusCode;
-            res.send(JSON.stringify(err.errorMessage));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(result));
-        }
-    });
-});
-
-
-router.delete('/allSongs', function(req,res) {
-    song.removeAllSongs(function(err,results) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.send(JSON.stringify(err));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(results));
-        }
-    });
-});
-
-router.delete('/song/:id', function(req,res) {
-    song.removeSong(req.params.id, function(err, results) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.send(JSON.stringify(err));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(results));
-        }
-    });
-});
-
 
 // routing mix
 router.get('/mix',function(req,res) {
@@ -261,6 +220,50 @@ router.post('/mix',function(req,res) {
         }
     });
 
+});
+
+
+//deprecated
+router.post('/song',function(req,res) {
+    song.postSong(req.body, function(err, result) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(result));
+        }
+    });
+});
+
+//deprecated
+router.delete('/allSongs', function(req,res) {
+    song.removeAllSongs(function(err,results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
+});
+
+//deprecated
+router.delete('/song/:id', function(req,res) {
+    song.removeSong(req.params.id, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
 });
 
 //deprecated
