@@ -201,7 +201,6 @@ var songsToAdd = [
 var mixesToAdd = [
     {
         "name": "mix1",
-        "user_id": 45,
         "song": {
             "_id": new ObjectID("56af72df2e23372e947501d7"),
             "artist": "James Brown",
@@ -270,7 +269,6 @@ var mixesToAdd = [
     },
     {
         "name": "mix2",
-        "user_id": 45,
         "song": {
             "_id": new ObjectID("56af72df2e23372e947501d7"),
             "artist": "James Brown",
