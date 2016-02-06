@@ -53,7 +53,6 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 
 //routing user
 
-
 router.get('/user/:connection', function(req,res){
     user.getUser(req.params.connection,function(err,results){
 	res.header('Content-Type', "application/json");
@@ -68,20 +67,6 @@ router.get('/user/:connection', function(req,res){
     });
 });
 
-
-router.post('/user', function(req,res){
-    user.addUser(req.body.name,req.body.pwd,req.body.right,function(err,results){
-	res.header('Content-Type', "application/json");
-	if (err) {
-            res.statusCode = 500;
-            res.send(JSON.stringify(err));
-        }
-	else{
-	    res.statusCode = 200;
-            res.send(JSON.stringify(results));
-	}
-    });
-});
 
 router.post('/user/connection', function(req,res){
     user.getConnection(req.body.name,req.body.pwd,function(err,results){
@@ -188,21 +173,6 @@ router.get('/mix/:songId',function(req,res) {
     });
 });
 
-router.post('/mix',function(req,res) {
-    mix.postMix(req.body, function(err, results) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.statusCode = err.statusCode;
-            res.send(JSON.stringify(err.errorMessage));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(results));
-        }
-    });
-
-});
-
 router.post('/mix/:connection',function(req,res) {
     if(req.body._id==undefined){
 	mix.postUserMix(req.params.connection,req.body, function(err, results) {
@@ -248,34 +218,6 @@ router.delete('/mix/:mixId/:connection',function(req,res) {
 });
 
 
-router.delete('/allMix', function(req,res) {
-    mix.removeAllMixes(req.params.id, function(err, deleted) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.statusCode = err.statusCode;
-            res.send(JSON.stringify(err.errorMessage));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(deleted));
-        }
-    });
-});
-
-router.delete('/mix/:id', function(req,res) {
-    mix.removeMix(req.params.id, function(err, deleted) {
-        res.header('Content-Type', "application/json");
-        if (err) {
-            res.statusCode = err.statusCode;
-            res.send(JSON.stringify(err.errorMessage));
-        }
-        else {
-            res.statusCode = 200;
-            res.send(JSON.stringify(deleted));
-        }
-    });
-});
-
 router.post('/comment/create', function(req, res) {
     commentDB.createComment(req.body, function(err, results) {
         res.header('Content-Type', "application/json");
@@ -302,6 +244,69 @@ router.post('/comment/update', function(req, res) {
             res.send(JSON.stringify(results));
         }
     })
+});
+
+
+//deprecated
+router.post('/mix',function(req,res) {
+    mix.postMix(req.body, function(err, results) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(results));
+        }
+    });
+
+});
+
+//deprecated
+router.delete('/allMix', function(req,res) {
+    mix.removeAllMixes(req.params.id, function(err, deleted) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(deleted));
+        }
+    });
+});
+
+
+//deprecated 
+router.post('/user', function(req,res){
+    user.addUser(req.body.name,req.body.pwd,req.body.right,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+            res.statusCode = 500;
+            res.send(JSON.stringify(err));
+        }
+	else{
+	    res.statusCode = 200;
+            res.send(JSON.stringify(results));
+	}
+    });
+});
+
+//deprecated
+router.delete('/mix/:id', function(req,res) {
+    mix.removeMix(req.params.id, function(err, deleted) {
+        res.header('Content-Type', "application/json");
+        if (err) {
+            res.statusCode = err.statusCode;
+            res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.stringify(deleted));
+        }
+    });
 });
 
 function getTracks(callback) {
