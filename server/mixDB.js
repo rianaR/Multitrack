@@ -293,9 +293,7 @@ module.exports = {
 				    callback(err);
 				}
 				else{
-				    console.log("mix1 owner",mix1);
 				    user.getUserById(mix1.owner,function(err,owner){
-					console.log("owner",owner);
 					if(err){
 					    callback(err);
 					}

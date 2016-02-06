@@ -70,7 +70,6 @@ module.exports = {
                             callback(err);
                             return;
                         }
-                        console.log("Result of update : "+updatedMix);
                         //TODO : ajouter le commentaire dans la collection "user"
                         callback(null, insertResults);
                     });
