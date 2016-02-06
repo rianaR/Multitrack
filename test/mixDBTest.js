@@ -108,7 +108,6 @@ describe("mix test", function () {
     it('should fail to add mix : invalid song id', function(done) {
         var invalidMix = {
             "name": "invalidMix",
-            "user_id": "token",
             "song_id": "56af742e4ec4a781cef3d",
 
             "masterVolume": 0.7,
@@ -138,7 +137,6 @@ describe("mix test", function () {
     it('should add and get a mix', function (done) {
         var mix1 = {
             "name": "mix1",
-            "user_id": "token",
             "song_id": "56af742e4ec4a781cef3d568",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -169,7 +167,6 @@ describe("mix test", function () {
 
         var mix1 = {
             "name": "mix1",
-            "user_id": "token",
             "song_id": "56af72df2e23372e947501d8",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -187,7 +184,6 @@ describe("mix test", function () {
         };
         var mix2 = {
             "name": "mix2",
-            "user_id": "token",
             "song_id": "56af72df2e23372e947501d8",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -221,7 +217,6 @@ describe("mix test", function () {
     it('should update a mix', function (done) {
         var mix1 = {
             "name": "mix1",
-            "user_id": "token",
             "song_id": "56af72df2e23372e947501d8",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -243,7 +238,6 @@ describe("mix test", function () {
             var updatedMix = {
                 "_id": mix1Id,
                 "name": "mix1",
-                "user_id": "token",
                 "song_id": "56af72df2e23372e947501d8",
                 "masterVolume": 0.5,
                 "trackEffects": [
@@ -277,7 +271,6 @@ describe("mix test", function () {
 
         var mix1 = {
             "name": "mix1",
-            "user_id": "token",
             "song_id": "56af72df2e23372e947501d8",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -295,7 +288,6 @@ describe("mix test", function () {
         };
         var mix2 = {
             "name": "mix2",
-            "user_id": "token",
             "song_id": "56af742e4ec4a781cef3d569",
             "masterVolume": 0.7,
             "trackEffects": [
@@ -341,7 +333,6 @@ describe("mix test", function () {
 		assert.equal(err, null);
 		mix1 = {
 		    "name": "mix1",
-		    "user_id": 45,
 		    "song_id": "56af72df2e23372e947501d8",
 		    "masterVolume" : 0.7,
 		    "trackEffects" : [
@@ -384,7 +375,6 @@ describe("mix test", function () {
 			assert.equal(err, null);
 			mix1 = {
 			    "name": "mix1",
-			    "user_id": "token",
 			    "song_id": "56af72df2e23372e947501d8",
 			    "masterVolume" : 0.7,
 			    "trackEffects" : [
@@ -451,7 +441,6 @@ describe("mix test", function () {
 			assert.equal(err, null);
 			var mix1 = {
 			    "name": "mix1",
-			    "user_id": 45,
 			    "song_id": "56af72df2e23372e947501d8",
 			    "masterVolume" : 0.7,
 			    "trackEffects" : [
@@ -470,7 +459,6 @@ describe("mix test", function () {
 
 			var mix2 = {
 			    "name": "mix2",
-			    "user_id": 45,
 			    "song_id": "56af72df2e23372e947501d8",
 			    "masterVolume" : 0.7,
 			    "trackEffects" : [

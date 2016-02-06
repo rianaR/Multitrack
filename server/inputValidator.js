@@ -65,7 +65,6 @@ var InputValidator = {
                 "_id" : { "required" : false },
 		"owner":{ "type" : "string", "required":false },
                 "name" : { "type" : "string", "required": true },
-                "user_id" : { "type" : "[string]"},
                 "song_id" : { "required" : true },
                 "masterVolume" : { "type": "number", "required": true },
                 "trackEffects" : {
