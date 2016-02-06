@@ -24,6 +24,110 @@ module.exports = {
         return commentCollection;
     },
 
+    getCommentByMixId: function(mixId,callback){
+	if (!ObjectID.isValid(userId)) {
+            callback({
+                statusCode : 400,
+                errorMessage : "Mix id is invalid"
+            });
+        }
+	else{
+	    mongo.findDocumentsByFilter( { mix_id : mixId },commentCollection,function(err,results){
+		if(err){
+		    callback(err);
+		}
+		else if(results.length != 1){
+		    callback({
+			errorMessage : "Invalid ID, no matching found"
+		    });
+		}
+		else{
+		    callback(null,results[0]);
+		}
+	    });
+	}
+    },
+
+    getUserComments: function(userId,callback){
+	if (!ObjectID.isValid(userId)) {
+            callback({
+                statusCode : 400,
+                errorMessage : "User id is invalid"
+            });
+        }
+	else{
+	    user.getUserById(userId,function(err,user1){
+		if(err){
+		    callback(err);
+		}
+		else if(results.length != 1){
+		    callback({
+			errorMessage : "Invalid ID, no matching found"
+		    });
+		}
+		else{
+		    callback(null,user1.comments);
+		}
+	    });
+	}
+    },
+
+    createUserComment : function(connection, mixId, comment, rate, callback){
+	if (!ObjectID.isValid(midId)) {
+            callback({
+                statusCode : 400,
+                errorMessage : "Mix id is invalid"
+            });
+        }
+	else {
+	    var com = {};
+	    com.comment = comment;
+	    com.mix_id = mixId
+	    var app = this;
+	    user.getUser(connection,function(err,user1){
+		if(err){
+		    callback(err);
+		}
+		else{
+		    comment.user_id = user1._id.toString();
+		    app.createComment(com,function(err,postedComment){
+			if(err){
+			    callback(err);
+			}
+			else{
+			    user1.comments.push(postComment.insertedId);
+			    user.updateUser(user1,function(err,results){
+				if(err) {
+				    callback(err);
+				}
+				else{
+				    mix.getMixById(mixId,function(err,mix1){
+					if(err){
+					    callback(err);
+					}
+					else{
+					    
+					    mix1.comments.push(postComment.insertedId);
+					    mix1.updateUserMix(connection,mi1,function(err,results){
+						if(err){
+						    callback(err);
+						}
+						else{
+						    callback(null,postedComment);
+						}
+					    });
+					}
+				    })
+				}
+			    });
+			}
+		    });
+		}
+	    });
+	}
+    },
+
+
     createComment : function(comment, callback) {
 
         var commentValidation = inputValidator.validateComment(comment);
