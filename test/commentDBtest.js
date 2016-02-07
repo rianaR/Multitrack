@@ -225,4 +225,10 @@ describe("Testing CommentDB - ", function () {
         })
     });
 
+    it ("should add a comment to an user",function(done) {
+
+	done();
+    });
+    
+
 });
