@@ -64,7 +64,7 @@ module.exports = {
                         });
                         return;
                     }
-                    mixToUpdate.comments.push({ _id : new ObjectID(String(insertResults.insertedId)) });
+                    mixToUpdate.comments.push(new ObjectID(String(insertResults.insertedId)));
                     mongo.updateDocument(mixToUpdate, mixDB.getMixDB(), function(err, updatedMix) {
                         if (err) {
                             callback(err);
@@ -126,7 +126,7 @@ module.exports = {
                 });
             }
             else {
-                //TODO : Supprimer le commentaire dans les collections "mix" et "user"
+                //TODO : Supprimer les commentaires dans les collections "mix" et "user"
                 callback(null, deleted);
             }
         });

@@ -77,12 +77,8 @@ var mix = {
         }
     ],
     "comments": [
-        {
-            "_id": new ObjectID("56b4cd215d1b19125ef9a232")
-        },
-        {
-            "_id": new ObjectID("56b4cd9d5d1b19125ef9a233")
-        }
+        new ObjectID("56b4cd215d1b19125ef9a232"),
+        new ObjectID("56b4cd9d5d1b19125ef9a233")
     ]
 };
 
@@ -111,17 +107,11 @@ user.name = "user1";
 user.pwd = "pwd1";
 user.right = "normal";
 user.mixes = [
-    {
-        "_id" : mix._id
-    }
+    mix._id
 ];
 user.comments = [
-    {
-        "_id" : comments[0]._id,
-    },
-    {
-        "_id" : comments[1]._id
-    }
+    comments[1]._id,
+    comments[0]._id
 ];
 user.connection = null;
 user.timeStamp = null;
@@ -203,7 +193,7 @@ describe("Testing CommentDB - ", function () {
             mixDB.getMixByID(commentToAdd.mix_id, function(err, mix) {
                 assert.equal(err, null);
                 mix.comments.forEach(function(comment) {
-                    if (comment._id.toHexString() == insertedCommentId) {
+                    if (comment.toHexString() == insertedCommentId) {
                         assert.ok(true);
                         done();
                     }
@@ -219,6 +209,9 @@ describe("Testing CommentDB - ", function () {
         commentDB.getCommentsByIds(commentIds, function(err, comments) {
             assert.equal(err, null);
             assert.equal(comments.length, 2);
+            console.log(comments);
+            console.log(comments[0]);
+            console.log(typeof comments[0]);
             assert.ok(commentIds.indexOf(comments[0]._id.toHexString()) != -1)
             assert.ok(commentIds.indexOf(comments[1]._id.toHexString()) != -1)
             done();
