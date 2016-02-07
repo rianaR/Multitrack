@@ -163,11 +163,23 @@ describe("Testing CommentDB - ", function () {
         });
     });
 
-    it('should remove one comment', function (done) {
-        commentDB.removeComment("56b4cd215d1b19125ef9a232", function(err, results) {
+    it('should remove one comment from database', function (done) {
+        var commentId = "56b4cd215d1b19125ef9a232";
+        commentDB.removeComment(commentId, function(err, results) {
             assert.equal(err, null);
             assert.equal(results.deletedCount, 1);
-            done();
+            //Comment should be deleted from corresponding mix and user objects
+            mixDB.getMixByID("56b5bcc98eee7b42127b7fc2", function(err, foundMix) {
+                assert.equal(err, null);
+                assert.equal(foundMix.comments.length, 1);
+                assert.ok(foundMix.comments.indexOf(new ObjectID(commentId)) == -1);
+                userDB.getUserById("56b5c1d78fc8d058d2405ad9", function(err, foundUser) {
+                    assert.equal(err, null);
+                    assert.equal(foundUser.comments.length, 1);
+                    assert.ok(foundUser.comments.indexOf(new ObjectID(commentId)) == -1);
+                    done();
+                });
+            });
         })
     });
 
