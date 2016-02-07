@@ -168,7 +168,7 @@ module.exports = {
                         });
                         return;
                     }
-                    mixToUpdate.comments.push({ _id : new ObjectID(String(insertResults.insertedId)) });
+                    mixToUpdate.comments.push(new ObjectID(String(insertResults.insertedId)));
                     mongo.updateDocument(mixToUpdate, mixDB.getMixDB(), function(err, updatedMix) {
                         if (err) {
                             callback(err);
@@ -215,8 +215,59 @@ module.exports = {
                 });
             }
             else {
-                //TODO : Supprimer le commentaire dans les collections "mix" et "user"
-                callback(null, deleted);
+                var finished = [false, false];
+                mongo.findDocumentsByFilter({comments : new ObjectID(commentId)}, mixDB.getMixDB(), function(err, mixes) {
+                    if (mixes.length != 0) {
+                        mixes[0].comments = mixes[0].comments.filter(function (element) {
+                            return (element.toHexString() != commentId);
+                        });
+                        mongo.updateDocument(mixes[0], mixDB.getMixDB(), function (err, result) {
+                            finished[0] = true;
+                            if (finished[1]) {
+                                if (err) {
+                                    callback({
+                                        statusCode: 500,
+                                        errorMessage: err
+                                    });
+                                    return;
+                                }
+                                callback(null, deleted);
+                            }
+                        });
+                    }
+                    else {
+                        finished[0] = true;
+                        if (finished[1]) {
+                            callback(null, deleted);
+                        }
+                    }
+                });
+                mongo.findDocumentsByFilter({comments : new ObjectID(commentId)}, "user", function(err, users) {
+                    if (users.length != 0)  {
+                        users[0].comments = users[0].comments.filter(function(element) {
+                            return (element.toHexString() != commentId);
+                        });
+                        mongo.updateDocument(users[0], "user", function(err, result) {
+                            finished[1] = true;
+                            if (finished[0]) {
+                                if (err) {
+                                    callback({
+                                        statusCode: 500,
+                                        errorMessage: err
+                                    });
+                                    return;
+                                }
+                                callback(null, deleted);
+                            }
+                        });
+                    }
+                    else {
+                        finished[1] = true;
+                        if (finished[0]) {
+                            callback(null, deleted);
+                        }
+                    }
+                });
             }
         });
     },
@@ -230,7 +281,8 @@ module.exports = {
                 });
             }
             else {
-                //TODO : Supprimer le commentaire dans les collections "mix" et "user"
+
+                //TODO : Supprimer les commentaires dans les collections "mix" et "user"
                 callback(null, deleted);
             }
         });

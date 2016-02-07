@@ -77,12 +77,8 @@ var mix = {
         }
     ],
     "comments": [
-        {
-            "_id": new ObjectID("56b4cd215d1b19125ef9a232")
-        },
-        {
-            "_id": new ObjectID("56b4cd9d5d1b19125ef9a233")
-        }
+        new ObjectID("56b4cd215d1b19125ef9a232"),
+        new ObjectID("56b4cd9d5d1b19125ef9a233")
     ]
 };
 
@@ -111,17 +107,11 @@ user.name = "user1";
 user.pwd = "pwd1";
 user.right = "normal";
 user.mixes = [
-    {
-        "_id" : mix._id
-    }
+    mix._id
 ];
 user.comments = [
-    {
-        "_id" : comments[0]._id,
-    },
-    {
-        "_id" : comments[1]._id
-    }
+    comments[1]._id,
+    comments[0]._id
 ];
 user.connection = null;
 user.timeStamp = null;
@@ -173,11 +163,23 @@ describe("Testing CommentDB - ", function () {
         });
     });
 
-    it('should remove one comment', function (done) {
-        commentDB.removeComment("56b4cd215d1b19125ef9a232", function(err, results) {
+    it('should remove one comment from database', function (done) {
+        var commentId = "56b4cd215d1b19125ef9a232";
+        commentDB.removeComment(commentId, function(err, results) {
             assert.equal(err, null);
             assert.equal(results.deletedCount, 1);
-            done();
+            //Comment should be deleted from corresponding mix and user objects
+            mixDB.getMixByID("56b5bcc98eee7b42127b7fc2", function(err, foundMix) {
+                assert.equal(err, null);
+                assert.equal(foundMix.comments.length, 1);
+                assert.ok(foundMix.comments.indexOf(new ObjectID(commentId)) == -1);
+                userDB.getUserById("56b5c1d78fc8d058d2405ad9", function(err, foundUser) {
+                    assert.equal(err, null);
+                    assert.equal(foundUser.comments.length, 1);
+                    assert.ok(foundUser.comments.indexOf(new ObjectID(commentId)) == -1);
+                    done();
+                });
+            });
         })
     });
 
@@ -203,7 +205,7 @@ describe("Testing CommentDB - ", function () {
             mixDB.getMixByID(commentToAdd.mix_id, function(err, mix) {
                 assert.equal(err, null);
                 mix.comments.forEach(function(comment) {
-                    if (comment._id.toHexString() == insertedCommentId) {
+                    if (comment.toHexString() == insertedCommentId) {
                         assert.ok(true);
                         done();
                     }
@@ -219,6 +221,9 @@ describe("Testing CommentDB - ", function () {
         commentDB.getCommentsByIds(commentIds, function(err, comments) {
             assert.equal(err, null);
             assert.equal(comments.length, 2);
+            console.log(comments);
+            console.log(comments[0]);
+            console.log(typeof comments[0]);
             assert.ok(commentIds.indexOf(comments[0]._id.toHexString()) != -1)
             assert.ok(commentIds.indexOf(comments[1]._id.toHexString()) != -1)
             done();

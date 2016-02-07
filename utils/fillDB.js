@@ -201,6 +201,7 @@ var songsToAdd = [
 var mixesToAdd = [
     {
         "name": "mix1",
+        "owner": new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "song": {
             "_id": new ObjectID("56af72df2e23372e947501d7"),
             "artist": "James Brown",
@@ -259,16 +260,13 @@ var mixesToAdd = [
             }
         ],
         "comments": [
-            {
-                "_id" : new ObjectID("56b4cd215d1b19125ef9a232")
-            },
-            {
-                "_id" : new ObjectID("56b4cd9d5d1b19125ef9a233")
-            }
+                new ObjectID("56b4cd215d1b19125ef9a232"),
+                new ObjectID("56b4cd9d5d1b19125ef9a233")
         ]
     },
     {
         "name": "mix2",
+        "owner": new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "song": {
             "_id": new ObjectID("56af72df2e23372e947501d7"),
             "artist": "James Brown",
@@ -327,12 +325,8 @@ var mixesToAdd = [
             }
         ],
         "comments": [
-            {
-                "_id" : new ObjectID("56b4cd215d1b19125ef9a234")
-            },
-            {
-                "_id" : new ObjectID("56b4cd9d5d1b19125ef9a235")
-            }
+                new ObjectID("56b4cd215d1b19125ef9a234"),
+                new ObjectID("56b4cd9d5d1b19125ef9a235")
         ]
     }
 ];
@@ -341,7 +335,7 @@ var commentsToAdd = [
     {
         "_id" : new ObjectID("56b4cd215d1b19125ef9a232"),
         "mix_id" : "",
-        "user_id" : "",
+        "user_id" : new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "content" : "Mix 1 comment no.2",
         "rate" : 1,
         "updatedAt" : "1454620874"
@@ -349,7 +343,7 @@ var commentsToAdd = [
     {
         "_id" : new ObjectID("56b4cd215d1b19125ef9a233"),
         "mix_id" : "",
-        "user_id" : "",
+        "user_id" : new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "content" : "Mix 2 comment no.1",
         "rate" : 2,
         "updatedAt" : "1454620845"
@@ -357,7 +351,7 @@ var commentsToAdd = [
     {
         "_id" : new ObjectID("56b4cd215d1b19125ef9a234"),
         "mix_id" : "",
-        "user_id" : "",
+        "user_id" : new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "content" : "Mix 2 comment no.2",
         "rate" : 3,
         "updatedAt" : "1454619457"
@@ -365,12 +359,30 @@ var commentsToAdd = [
     {
         "_id" : new ObjectID("56b4cd215d1b19125ef9a235"),
         "mix_id" : "",
-        "user_id" : "",
+        "user_id" : new ObjectID("56b5c1d78fc8d058d2405ad9"),
         "content" : "Mix 1 comment no.1",
         "rate" : 4,
         "updatedAt" : "1454618456"
     }
 ];
+
+var userToAdd = {
+    _id : new ObjectID("56b5c1d78fc8d058d2405ad9"),
+    name : "user1",
+    pwd : "pwd1",
+    right : "normal",
+    mixes : [
+
+    ],
+    comments : [
+        new ObjectID("56b4cd215d1b19125ef9a232"),
+        new ObjectID("56b4cd215d1b19125ef9a233"),
+        new ObjectID("56b4cd215d1b19125ef9a234"),
+        new ObjectID("56b4cd9d5d1b19125ef9a235")
+    ],
+    connection : null,
+    timeStamp : null
+};
 
 // putting the data into the 'test' database:
 MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
@@ -382,17 +394,30 @@ MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
             console.log("Number of inserted songs : "+result.insertedCount);
             db.collection(mixDB.getMixDB()).deleteMany({}, function(err, results) {
                 console.log("All mixes deleted");
-                db.collection(mixDB.getMixDB()).insertMany(mixesToAdd, function(err, result) {
+                db.collection(mixDB.getMixDB()).insertMany(mixesToAdd, function(err, mixResult) {
                     assert.equal(null, err);
-                    console.log("Number of inserted mixes : " + result.insertedCount);
-                    commentsToAdd[0].mix_id = result.insertedIds[0];
-                    commentsToAdd[1].mix_id = result.insertedIds[0];
-                    commentsToAdd[2].mix_id = result.insertedIds[1];
-                    commentsToAdd[3].mix_id = result.insertedIds[1];
-                    db.collection(commentDB.getCommentDB()).insertMany(commentsToAdd, function(err,result) {
-                        assert.equal(null, err);
-                        console.log("Number of inserted comments : " + result.insertedCount);
-                        db.close();
+                    console.log("Number of inserted mixes : " + mixResult.insertedCount);
+                    commentsToAdd[0].mix_id = mixResult.insertedIds[0];
+                    commentsToAdd[1].mix_id = mixResult.insertedIds[0];
+                    commentsToAdd[2].mix_id = mixResult.insertedIds[1];
+                    commentsToAdd[3].mix_id = mixResult.insertedIds[1];
+
+                    userToAdd.mixes.push(mixResult.insertedIds[0]);
+                    userToAdd.mixes.push(mixResult.insertedIds[1]);
+                    db.collection(commentDB.getCommentDB()).deleteMany({}, function(err, results) {
+                        console.log("All comments deleted");
+                        db.collection(commentDB.getCommentDB()).insertMany(commentsToAdd, function (err, result) {
+                            assert.equal(null, err);
+                            console.log("Number of inserted comments : " + result.insertedCount);
+                            db.collection("user").deleteMany({}, function(err, results) {
+                                console.log("All users deleted");
+                                db.collection("user").insertOne(userToAdd, function (err, result) {
+                                    assert.equal(null, err);
+                                    console.log("Number of inserted users : " + result.insertedCount);
+                                    db.close();
+                                });
+                            });
+                        });
                     });
                 });
             });
