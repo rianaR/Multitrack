@@ -223,6 +223,16 @@ router.post('/comment/create/:connection',function(req,res){
     
 });
 
+router.post('/comment/update/:connection',function(req,res) {
+    res.statusCode = 200;
+    res.send(JSON.stringify('{"comment":"update comment mocked"}'));
+});
+
+router.delete('/comment/:commentId/:connection',function(req,res) {
+    res.statusCode = 200;
+    res.send(JSON.stringify('{"comment":"delete comment mocked"}'));
+});
+
 //depreated
 router.post('/comment/create', function(req, res) {
     commentDB.createComment(req.body, function(err, results) {
