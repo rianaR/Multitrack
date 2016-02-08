@@ -169,7 +169,7 @@ module.exports = {
 		    callback(null,user1.connection);
 		});
 	    }
-	});
+	});  
     },
 
     
@@ -190,6 +190,7 @@ module.exports = {
                 });
 	    }
 	    else if(results.length == 0){
+		console.log("res",results);
 		callback({
                     statusCode : 500,
                     errorMessage : "The connection token is undefined"
@@ -205,7 +206,6 @@ module.exports = {
                     });
 		}
 		else{	    
-		    user.pwd = null;
 		    callback(null,user);
 		}
 	    }

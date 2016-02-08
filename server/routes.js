@@ -54,6 +54,7 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 //routing user
 
 router.get('/user/:connection', function(req,res){
+    user.getUsers(function(err,results){ console.log(results); 
     user.getUser(req.params.connection,function(err,results){
 	res.header('Content-Type', "application/json");
 	if (err) {
@@ -61,10 +62,11 @@ router.get('/user/:connection', function(req,res){
             res.send(JSON.stringify(err));
         }
 	else{
+	    results.pwd = null;
 	    res.statusCode = 200;
             res.send(JSON.stringify(results));
 	}
-    });
+    }); });
 });
 
 
@@ -177,6 +179,20 @@ router.delete('/mix/:mixId/:connection',function(req,res) {
 });
 
 
+router.post('/user', function(req,res){
+    user.addUser(req.body.name,req.body.pwd,req.body.right,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+            res.statusCode = 500;
+            res.send(JSON.stringify(err));
+        }
+	else{
+	    res.statusCode = 200;
+            res.send(JSON.stringify(results));
+	}
+    });
+});
+
 //renvoie les commentaies pour un mix
 router.get('/comment/:mixId',function(req,res) {
     commentDB.getCommentsByMixId (req.params.mixId,function(err,results) {
@@ -197,7 +213,7 @@ router.get('/comment/:mixId',function(req,res) {
 //représente l'id du mix lié au commentaire , le commentaire et la note
 router.post('/comment/create/:connection',function(req,res){
     commentDB.createUserComment(req.params.connection,req.body.mixId, req.body.comment, req.body.rate,function(err,results){
-		res.header('Content-Type', "application/json");
+	res.header('Content-Type', "application/json");
 	if (err) {
 	    res.statusCode = err.statusCode;
 	    res.send(JSON.stringify(err.errorMessage));
@@ -206,12 +222,21 @@ router.post('/comment/create/:connection',function(req,res){
 	    res.statusCode = 200;
 	    res.send(JSON.stringify(results));
         }
-	});
+    });
 });
 
 router.post('/comment/update/:connection',function(req,res) {
-    res.statusCode = 200;
-    res.send(JSON.stringify('{"comment":"update comment mocked"}'));
+    commentDB.updateUserComment(req.params.connection,req.body.mixId, req.body.comment, req.body.rate,function(err,results){
+	res.header('Content-Type', "application/json");
+	if (err) {
+	    res.statusCode = err.statusCode;
+	    res.send(JSON.stringify(err.errorMessage));
+        }
+        else {
+	    res.statusCode = 200;
+	    res.send(JSON.stringify(results));
+        }
+    });
 });
 
 router.delete('/comment/:commentId/:connection',function(req,res) {
@@ -326,20 +351,7 @@ router.delete('/allMix', function(req,res) {
 });
 
 
-//deprecated 
-router.post('/user', function(req,res){
-    user.addUser(req.body.name,req.body.pwd,req.body.right,function(err,results){
-	res.header('Content-Type', "application/json");
-	if (err) {
-            res.statusCode = 500;
-            res.send(JSON.stringify(err));
-        }
-	else{
-	    res.statusCode = 200;
-            res.send(JSON.stringify(results));
-	}
-    });
-});
+
 
 //deprecated
 router.delete('/mix/:id', function(req,res) {

@@ -90,7 +90,7 @@ describe('userDB test', function() {
 		user.getUser(connection,function(err,user1){
 		    assert.equal(err,null);
 		    assert.equal(user1.name,"user1");
-		    assert.equal(user1.pwd,null);
+		    assert.equal(user1.pwd,"pwd1");
 		    assert.equal(user1.right,"admin");
 		    assert.deepEqual(user1.mixes,[]);
 		    assert.deepEqual(user1.comments,[]);
@@ -115,7 +115,7 @@ describe('userDB test', function() {
 		user.getUser(connection,function(err,user1){
 		    assert.equal(err,null);
 		    assert.equal(user1.name,"user1");
-		    assert.equal(user1.pwd,null);
+		    assert.equal(user1.pwd,"pwd1");
 		    assert.equal(user1.right,"normal");
 		    assert.deepEqual(user1.mixes,[]);
 		    assert.deepEqual(user1.comments,[]);

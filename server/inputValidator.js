@@ -67,6 +67,7 @@ var InputValidator = {
                 "name" : { "type" : "string", "required": true },
                 "song_id" : { "required" : true },
                 "masterVolume" : { "type": "number", "required": true },
+		"comments" : { "type":"array", "required":false },
                 "trackEffects" : {
                     "type": "array",
                     "required": true,
