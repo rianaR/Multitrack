@@ -290,8 +290,60 @@ module.exports = {
         });
     },
 
-    updateComment : function(updatedComment, callback) {
-        //TODO : updateComment
+    updateUserComment : function(updatedComment, callback) {
+	if (!ObjectID.isValid(mixId)) {
+            callback({
+                statusCode : 400,
+                errorMessage : "Mix id is invalid"
+            });
+        }
+	else {
+	    var com = {};
+	    com.content = comment;
+	    com.mix_id = mixId;
+	    com.rate = rate;
+	    var app = this;
+	    userDB.getUser(connection,function(err,user1){
+		if(err){
+		    callback(err);
+		}
+		else{
+		    com.user_id = user1._id.toString();
+		    mongo.updateDocument(com,commentCollection,function(err,postedComment){
+			if(err){
+			    callback(err);
+			}
+			else{
+			    user1.comments.push(postedComment.insertedId);
+			    userDB.updateUser(user1,function(err,results){
+				if(err) {
+				    callback(err);
+				}
+				else{
+				    mixDB.getMixByID(mixId,function(err,mix1){
+					if(err){
+					    callback(err);
+					}
+					else{			    
+					    mix1.comments.push(postedComment.insertedId);
+					    mixDB.updateUserMix(connection,mix1,function(err,results){
+						if(err){
+						    callback(err);
+						}
+						else{
+						    callback(null,postedComment);
+						}
+					    });
+					}
+				    })
+				}
+			    });
+			}
+		    });
+		}
+	    });
+	}
+
     }
 
 };

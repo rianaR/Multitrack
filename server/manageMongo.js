@@ -138,7 +138,7 @@ module.exports = {
 			    callback(err);
 			}
 			else {
-			    console.log("Document in "+collection+"has been deleted");
+			    console.log("Document in "+collection+" has been deleted");
 			    callback(null, deleted);
 			}
 		    }
@@ -201,7 +201,7 @@ module.exports = {
 							     callback(err);
 							 }
 							 else {
-							     console.log("Document in "+collection+"has been updated");
+							     console.log("Document in "+collection+" has been updated");
 							     callback(err, updated);
 							 }
 							 db.close();

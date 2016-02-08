@@ -311,32 +311,41 @@ MongoClient.connect('mongodb://127.0.0.1:27017/prod', function(err, db) {
     if(err) throw err;
     db.collection(song.getSongDB()).deleteMany({}, function(err, results) {
         console.log("All songs deleted");
-        db.collection(song.getSongDB()).insertMany(songsToAdd, function(err, result) {
-            assert.equal(null, err);
-            console.log("Number of inserted songs : "+result.insertedCount);
-	    userDB.addUser("user","user","normal",function(err,results){
-		assert.equal(null,err);
-		console.log('User "user" added');
-		userDB.addUser("admin","admin","admin",function(err,results){
-		    assert.equal(null,err);
-		    console.log('User "admin" added');
-		    userDB.getConnection("user","user",function(err,token){
+	userDB.removeAllUsers(function(err,results){
+	    assert.equal(null, err);
+	    console.log("All users deleted");
+	    mixDB.removeAllMixes(function(err,results){
+		assert.equal(null, err);
+		db.collection(song.getSongDB()).insertMany(songsToAdd, function(err, result) {
+		    db.close();
+		    assert.equal(null, err);
+		    console.log("Number of inserted songs : "+result.insertedCount);
+		    userDB.addUser("user","user","normal",function(err,results){
 			assert.equal(null,err);
-			mixDB.postUserMix(token,mix1,function(err,result){
+			console.log('User "user" added');
+			userDB.addUser("admin","admin","admin",function(err,results){
 			    assert.equal(null,err);
-			    mixDB.postUserMix(token,mix2,function(err,result){
+			    console.log('User "admin" added');
+			    userDB.getConnection("admin","admin",function(err,token){
 				assert.equal(null,err);
-				console.log("mix inserted");
-				commentDB.removeAllComments(function(err,results){
-                                    assert.equal(null,err);
-				    console.log("comments deleted");
-				    db.close();
+				mixDB.postUserMix(token,mix1,function(err,result){
+				    assert.equal(null,err);
+				    userDB.getUsers(function(err,res){
+					mixDB.postUserMix(token,mix2,function(err,result){
+					    assert.equal(null,err);
+					    console.log("mix inserted");
+					    commentDB.removeAllComments(function(err,results){
+						assert.equal(null,err);
+						console.log("comments deleted");
+					    });
+					});					
+				    });
 				});
                             });
-                        });
+			});
                     });
-                });
+		});
             });
-        });
+	});
     });
 });

@@ -54,7 +54,6 @@ router.get(/\/track\/(\w+)\/(?:sound|visualisation)\/((\w|.)+)/, function (req, 
 //routing user
 
 router.get('/user/:connection', function(req,res){
-    user.getUsers(function(err,results){ console.log(results); 
     user.getUser(req.params.connection,function(err,results){
 	res.header('Content-Type', "application/json");
 	if (err) {
@@ -66,7 +65,7 @@ router.get('/user/:connection', function(req,res){
 	    res.statusCode = 200;
             res.send(JSON.stringify(results));
 	}
-    }); });
+    });
 });
 
 
@@ -226,17 +225,10 @@ router.post('/comment/create/:connection',function(req,res){
 });
 
 router.post('/comment/update/:connection',function(req,res) {
-    commentDB.updateUserComment(req.params.connection,req.body.mixId, req.body.comment, req.body.rate,function(err,results){
-	res.header('Content-Type', "application/json");
-	if (err) {
-	    res.statusCode = err.statusCode;
-	    res.send(JSON.stringify(err.errorMessage));
-        }
-        else {
-	    res.statusCode = 200;
-	    res.send(JSON.stringify(results));
-        }
-    });
+    
+    res.statusCode = 200;
+    res.send(JSON.stringify('{"comment":"update comment mocked" }'));
+
 });
 
 router.delete('/comment/:commentId/:connection',function(req,res) {

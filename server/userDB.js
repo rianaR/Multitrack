@@ -190,7 +190,6 @@ module.exports = {
                 });
 	    }
 	    else if(results.length == 0){
-		console.log("res",results);
 		callback({
                     statusCode : 500,
                     errorMessage : "The connection token is undefined"
