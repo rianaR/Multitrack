@@ -92,6 +92,7 @@ module.exports = {
 		}
 		else{
 		    com.user_id = user1._id.toString();
+		    com.user_name = user1.name;
 		    mongo.insertDocument(com,commentCollection,function(err,postedComment){
 //		    app.createComment(com,function(err,postedComment){
 			if(err){

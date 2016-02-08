@@ -194,6 +194,7 @@ describe("Testing CommentDB - ", function () {
     it('should add a comment',function (done) {
         var commentToAdd = {
             "user_id" : user._id.toHexString(),
+	    "user_name" : "bob",
             "mix_id" : mix._id.toHexString(),
             "content" : "Awesome mix, I could to listen to it all day long...",
             "rate" : 5

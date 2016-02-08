@@ -122,6 +122,7 @@ var InputValidator = {
             "properties" : {
                 "_id" : {"type" : "string", "required" : false },
                 "user_id" : { "type" : "string", "required" : true },
+		"user_name" : {"type" : "string", "required" : true },
                 "mix_id" : {"type" : "string", "required" : true },
                 "content" : { "type" : "string", "required" : true },
                 "rate" : { "type": "integer", "required": true }
