@@ -137,13 +137,13 @@ module.exports = {
                             });
                             return;
                         }
-                        if (results.modifiedCount == 0) {
+/*                        if (results.modifiedCount == 0) {
                             callback({
                                 statusCode : 400,
                                 errorMessage : "The mix has not been updated because it was not found"
                             });
                             return;
-                        }
+                        }*/
                         callback(null, results);
                     });
                 }
@@ -200,20 +200,12 @@ module.exports = {
 
 
     updateMix: function(updatedMix, callback) {
+
 	var app = this;
-        this.getMixByID(updatedMix._id, function(err, mixToUpdate) {
-            if (err) {
-                callback(err);
-            }
-            else {
-                mixToUpdate.masterVolume = updatedMix.masterVolume;
-                mixToUpdate.trackEffects = updatedMix.trackEffects;
-                mixToUpdate.name = updatedMix.name;
-                mongo.updateDocument(mixToUpdate,mixCollection,function(err,results){
-                    callback(err,results);
-                });
-            }
+        mongo.updateDocument(updatedMix,mixCollection,function(err,results){
+            callback(err,results);
         });
+        
     },
 
     updateUserMix: function(connection, updateMix, callback){
