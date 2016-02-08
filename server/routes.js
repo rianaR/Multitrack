@@ -178,8 +178,8 @@ router.delete('/mix/:mixId/:connection',function(req,res) {
 
 
 //renvoie les commentaies pour un mix
-router.get('/comment/:mixId',function(req,res) {   
-/*    commentDB.getCommentByMixId (req.params.mixId,function(err,results) {
+router.get('/comment/:mixId',function(req,res) {
+    commentDB.getCommentsByMixId (req.params.mixId,function(err,results) {
 	res.header('Content-Type', "application/json");
 	if (err) {
 	    res.statusCode = err.statusCode;
@@ -189,25 +189,14 @@ router.get('/comment/:mixId',function(req,res) {
 	    res.statusCode = 200;
 	    res.send(JSON.stringify(results));
         }
-    });*/
-    var results =     {
-        "_id" : "56b4cd215d1b19125ef9a232",
-        "mix_id" : mix._id,
-        "user_id" : "",
-        "content" : "mocked comment",
-        "rate" : 1,
-        "updatedAt" : "1454620874"
-    }
-
-    res.statusCode = 200;
-    res.send(JSON.stringify(results));
+    });
 
 });
 
 // créer un commentaire, requis => json contenant les champs mixId,comment et rate qui 
 //représente l'id du mix lié au commentaire , le commentaire et la note
 router.post('/comment/create/:connection',function(req,res){
-/*    commentDB.createUserComment(req.params.connection,req.body.mixId, req.body.comment, req.body.rate,function(err,results){
+    commentDB.createUserComment(req.params.connection,req.body.mixId, req.body.comment, req.body.rate,function(err,results){
 		res.header('Content-Type', "application/json");
 	if (err) {
 	    res.statusCode = err.statusCode;
@@ -217,10 +206,7 @@ router.post('/comment/create/:connection',function(req,res){
 	    res.statusCode = 200;
 	    res.send(JSON.stringify(results));
         }
-	});*/
-    res.statusCode = 200;
-    res.send(JSON.stringify('{"comment":"postcomment mocked"}'));
-    
+	});
 });
 
 router.post('/comment/update/:connection',function(req,res) {

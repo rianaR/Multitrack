@@ -24,8 +24,8 @@ module.exports = {
         return commentCollection;
     },
 
-    getCommentByMixId: function(mixId,callback){
-	if (!ObjectID.isValid(userId)) {
+    getCommentsByMixId: function(mixId,callback){
+	if (!ObjectID.isValid(mixId)) {
             callback({
                 statusCode : 400,
                 errorMessage : "Mix id is invalid"
@@ -36,13 +36,14 @@ module.exports = {
 		if(err){
 		    callback(err);
 		}
-		else if(results.length != 1){
+		else if(results.length == 0){
 		    callback({
+			statusCode : 400,
 			errorMessage : "Invalid ID, no matching found"
 		    });
 		}
 		else{
-		    callback(null,results[0]);
+		    callback(null,results);
 		}
 	    });
 	}
@@ -73,7 +74,7 @@ module.exports = {
     },
 
     createUserComment : function(connection, mixId, comment, rate, callback){
-	if (!ObjectID.isValid(midId)) {
+	if (!ObjectID.isValid(mixId)) {
             callback({
                 statusCode : 400,
                 errorMessage : "Mix id is invalid"
@@ -81,34 +82,35 @@ module.exports = {
         }
 	else {
 	    var com = {};
-	    com.comment = comment;
-	    com.mix_id = mixId
+	    com.content = comment;
+	    com.mix_id = mixId;
+	    com.rate = rate;
 	    var app = this;
-	    user.getUser(connection,function(err,user1){
+	    userDB.getUser(connection,function(err,user1){
 		if(err){
 		    callback(err);
 		}
 		else{
-		    comment.user_id = user1._id.toString();
-		    app.createComment(com,function(err,postedComment){
+		    com.user_id = user1._id.toString();
+		    mongo.insertDocument(com,commentCollection,function(err,postedComment){
+//		    app.createComment(com,function(err,postedComment){
 			if(err){
 			    callback(err);
 			}
 			else{
-			    user1.comments.push(postComment.insertedId);
-			    user.updateUser(user1,function(err,results){
+			    user1.comments.push(postedComment.insertedId);
+			    userDB.updateUser(user1,function(err,results){
 				if(err) {
 				    callback(err);
 				}
 				else{
-				    mix.getMixById(mixId,function(err,mix1){
+				    mixDB.getMixByID(mixId,function(err,mix1){
 					if(err){
 					    callback(err);
 					}
-					else{
-					    
-					    mix1.comments.push(postComment.insertedId);
-					    mix1.updateUserMix(connection,mi1,function(err,results){
+					else{			    
+					    mix1.comments.push(postedComment.insertedId);
+					    mixDB.updateUserMix(connection,mix1,function(err,results){
 						if(err){
 						    callback(err);
 						}

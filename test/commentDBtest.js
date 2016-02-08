@@ -221,9 +221,6 @@ describe("Testing CommentDB - ", function () {
         commentDB.getCommentsByIds(commentIds, function(err, comments) {
             assert.equal(err, null);
             assert.equal(comments.length, 2);
-            console.log(comments);
-            console.log(comments[0]);
-            console.log(typeof comments[0]);
             assert.ok(commentIds.indexOf(comments[0]._id.toHexString()) != -1)
             assert.ok(commentIds.indexOf(comments[1]._id.toHexString()) != -1)
             done();
@@ -231,8 +228,39 @@ describe("Testing CommentDB - ", function () {
     });
 
     it ("should add a comment to an user",function(done) {
-
-	done();
+	userDB.getConnection("user1","pwd1",function(err,token){
+	    assert.equal(err,null);
+	    commentDB.createUserComment(token,mix._id.toString(),"commentaire test",5,function(err,insertedComment){
+		assert.equal(err,null);
+		commentDB.getCommentsByMixId(mix._id.toString(),function(err,res){
+		    assert.equal(err,null);
+		    assert.equal(res[0].content,"commentaire test");
+		    assert.equal(res[0].rate,5);
+		    assert.equal(res[0].mix_id,mix._id);
+		    assert.equal(res[0].user_id,user._id);
+		    userDB.getUser(token,function(err,user){
+			assert.equal(err,null);
+			var isGet = false;
+			for(var i=0;i<user.comments.length;i++){
+			    if(user.comments[i].equals(insertedComment.insertedId)){
+				isGet = true;
+			    }
+			}
+			assert.equal(true,isGet);
+			mixDB.getMixByID(mix._id.toString(),function(err,mix){
+			    var isGet = false;
+			    for(var i=0;i<mix.comments.length;i++){
+				if(mix.comments[i].equals(insertedComment.insertedId)){
+				    isGet = true;
+				}
+			    }
+			    assert.equal(true,isGet);
+			    done();
+			});
+		    });
+		});
+	    });
+	});
     });
     
 
